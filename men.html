@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Men's Collection | RIVAL PRAXIS</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header>
+    <div class="container">
+        <h2 class="logo">RIVAL PRAXIS</h2>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="women.html">Women</a>
+            <a href="men.html">Men</a>
+            <a href="accessories.html">Accessories</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="section collection-intro">
+        <h1>Men's Collection</h1>
+        <p>Premium shirts, polo shirts, linen outfits, casual fashion, beachwear and business suits.</p>
+        <input type="text" id="search" class="search-box"
+               placeholder="Search by reference or size..."
+               oninput="searchProducts()">
+    </section>
+
+    <section class="section gallery-section">
+
+        <div id="gallery" class="products-grid"></div>
+    </section>
+</main>
+
+<footer>
+    <p>© 2026 RIVAL PRAXIS IMPORT &amp; EXPORT. All Rights Reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+<script>
+    loadProducts("men");
+</script>
+</body>
+</html>
