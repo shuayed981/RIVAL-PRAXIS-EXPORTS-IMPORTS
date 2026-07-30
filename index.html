@@ -12,7 +12,6 @@
 <header>
 <div class="container">
 <h2 class="logo">RIVAL PRAXIS</h2>
-<div id="google_translate_element"></div>
 <button aria-label="Menu" class="menu-toggle" type="button">
 <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
 <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
@@ -23,7 +22,22 @@
 <a href="#mission">Mission</a>
 <a href="#contact">Contact</a>
 <a href="terms.html">Terms</a>
-<a href="privacy.html">Privacy</a><a href="cookies.html">Cookies</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns</a><a href="payments.html">Payments</a></nav>
+<a href="privacy.html">Privacy</a><a href="cookies.html">Cookies</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns</a><a href="payments.html">Payments</a><div class="mobile-translate"><select id="languageSwitcher" class="lang-select">
+<option value="">Language</option>
+<option value="en">English</option>
+<option value="pt">Português</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="de">Deutsch</option>
+<option value="it">Italiano</option>
+<option value="ru">Русский</option>
+<option value="ar">العربية</option>
+<option value="bn">বাংলা</option>
+<option value="hi">हिन्दी</option>
+<option value="tr">Türkçe</option>
+<option value="zh-CN">中文</option>
+</select>
+<div id="google_translate_element" style="display:none"></div></div></nav>
 </div>
 </header>
 <main>
@@ -85,5 +99,22 @@ function googleTranslateElementInit(){
 }
 </script>
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+document.addEventListener('change',function(e){
+ if(e.target.id==='languageSwitcher'){
+   const wait=setInterval(()=>{
+     const combo=document.querySelector('.goog-te-combo');
+     if(combo){
+       combo.value=e.target.value;
+       combo.dispatchEvent(new Event('change'));
+       clearInterval(wait);
+     }
+   },300);
+   setTimeout(()=>clearInterval(wait),6000);
+ }
+});
+</script>
+
 </body>
 </html>
