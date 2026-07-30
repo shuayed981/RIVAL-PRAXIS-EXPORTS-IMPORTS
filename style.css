@@ -167,3 +167,27 @@ overflow-y:auto;
 }
 .hero-content{width:min(90%,700px);margin:0 auto;}
 }
+
+
+/* Google Translate */
+#google_translate_element{
+  margin-left:20px;
+}
+.goog-te-gadget{
+  font-size:0!important;
+}
+.goog-te-gadget .goog-te-combo{
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid #d4af37;
+  font-size:14px;
+}
+@media(max-width:768px){
+  .container{flex-wrap:wrap;}
+  #google_translate_element{
+    width:100%;
+    margin-top:10px;
+    text-align:center;
+    order:3;
+  }
+}
