@@ -31,7 +31,15 @@ footer{background:var(--brand);color:#fff;text-align:center;padding:25px}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-thumb{background:var(--brand)}::-webkit-scrollbar-track{background:#ececec}
 @keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:900px){.hero h1{font-size:42px}.hero p{font-size:20px}.section h1{font-size:38px}.section h2{font-size:34px}.card img,.product-card img{height:350px}}
-@media(max-width:768px){body{padding-top:126px}.container{flex-direction:column}.logo{font-size:24px}nav{margin-top:12px;gap:14px;justify-content:center}.hero{margin-top:-126px}.hero h1{font-size:34px}.hero p{font-size:18px}.section{padding:70px 8%}.products-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}.product-card img{height:320px}}
+@media(max-width:768px){
+body{padding-top:82px}
+.hero{margin-top:-82px}
+.hero h1{font-size:34px}
+.hero p{font-size:18px}
+.section{padding:70px 8%}
+.products-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+.product-card img{height:320px}
+}
 @media(max-width:500px){body{padding-top:155px}nav{font-size:14px}.hero{margin-top:-155px}.hero h1{font-size:28px}.hero p{font-size:16px}.section h1,.section h2{font-size:30px}.products-grid{grid-template-columns:1fr}.product-card img{height:auto;aspect-ratio:4/5;object-fit:cover}}
 
 
@@ -126,4 +134,15 @@ nav.active{display:flex}
 nav a{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.1)}
 body{padding-top:82px}
 .hero{margin-top:-82px}
+}
+
+
+@media(max-width:768px){
+header{padding:12px 0}
+.container{display:flex;flex-direction:row!important;justify-content:space-between;align-items:center}
+.logo{font-size:24px}
+.menu-toggle{display:flex;align-items:center;justify-content:center;background:none;border:none;color:#fff;padding:4px}
+nav{display:none!important;position:absolute;top:100%;left:0;width:100%;background:#66101F;flex-direction:column;align-items:center}
+nav.active{display:flex!important}
+nav a{width:100%;text-align:center;padding:16px 20px}
 }

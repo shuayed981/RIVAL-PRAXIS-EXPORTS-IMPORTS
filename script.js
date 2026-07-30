@@ -143,3 +143,13 @@ document.addEventListener("DOMContentLoaded",()=>{
    nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>nav.classList.remove("active")));
  }
 });
+
+
+document.addEventListener("click",(e)=>{
+ const btn=document.querySelector(".menu-toggle");
+ const nav=document.querySelector("nav");
+ if(!btn||!nav) return;
+ if(nav.classList.contains("active") && !nav.contains(e.target) && !btn.contains(e.target)){
+   nav.classList.remove("active");
+ }
+});
