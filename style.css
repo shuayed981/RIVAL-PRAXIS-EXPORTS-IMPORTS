@@ -151,3 +151,19 @@ border-color:var(--gold)}
 @media (min-width:769px){
   .menu-toggle{display:none;}
 }
+
+/* Samsung mobile overflow fixes */
+html,body{overflow-x:hidden;width:100%;}
+header,.container,.hero,.section,footer,nav{max-width:100%;}
+@media (max-width:768px){
+nav{
+position:fixed;
+top:82px;
+left:0;
+right:0;
+width:100%;
+max-height:calc(100vh - 82px);
+overflow-y:auto;
+}
+.hero-content{width:min(90%,700px);margin:0 auto;}
+}
