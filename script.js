@@ -133,3 +133,13 @@ function searchProducts() {
         card.style.display = searchable.includes(filter) ? "" : "none";
     });
 }
+
+
+document.addEventListener("DOMContentLoaded",()=>{
+ const btn=document.querySelector(".menu-toggle");
+ const nav=document.querySelector("nav");
+ if(btn&&nav){
+   btn.addEventListener("click",()=>nav.classList.toggle("active"));
+   nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>nav.classList.remove("active")));
+ }
+});

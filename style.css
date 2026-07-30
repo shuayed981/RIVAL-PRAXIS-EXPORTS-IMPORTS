@@ -114,3 +114,16 @@ body{padding-top:165px}
 .section h2{font-size:28px}
 .search-box{width:100%}
 }
+
+
+/* Mobile dropdown menu */
+.menu-toggle{display:none;background:none;border:0;color:#fff;font-size:2rem;cursor:pointer}
+@media(max-width:768px){
+.container{flex-direction:row;align-items:center}
+.menu-toggle{display:block;margin-left:auto}
+nav{display:none;position:absolute;top:100%;left:0;width:100%;background:#66101F;flex-direction:column;z-index:1000}
+nav.active{display:flex}
+nav a{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.1)}
+body{padding-top:82px}
+.hero{margin-top:-82px}
+}
