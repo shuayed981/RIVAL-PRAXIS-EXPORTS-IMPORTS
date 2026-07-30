@@ -81,3 +81,36 @@ footer a{color:#fff}
 footer a:hover{color:var(--gold)}
 .search-box:hover,.search-box:focus{
 border-color:var(--gold)}
+
+
+/* ===== MOBILE REDESIGN ===== */
+@media (max-width:768px){
+header{padding:12px 0;}
+.container{flex-direction:column;gap:12px}
+nav{justify-content:center;gap:10px}
+nav a{padding:8px 10px;font-size:14px}
+body{padding-top:140px}
+.hero{height:72vh;margin-top:-140px;background-attachment:scroll}
+.hero-content{width:92%;padding:0 10px}
+.hero h1{font-size:2rem;line-height:1.2}
+.hero p{font-size:1rem;margin-bottom:22px}
+.section{padding:55px 6%}
+.cards,.products-grid{grid-template-columns:1fr;gap:22px}
+.card,.product-card{max-width:430px;margin:0 auto;width:100%}
+.card img,.product-card img{height:auto;aspect-ratio:4/5}
+.card-content h3{font-size:24px}
+.btn{display:block;width:100%;max-width:280px;margin:18px auto;padding:14px 18px;text-align:center}
+.mission{grid-template-columns:1fr;text-align:center;gap:25px}
+#contact p{font-size:16px}
+footer{padding:30px 18px}
+footer p,footer a{font-size:14px;display:inline-block;margin:4px}
+}
+@media (max-width:480px){
+body{padding-top:165px}
+.hero{margin-top:-165px;height:68vh}
+.hero h1{font-size:1.7rem}
+.hero p{font-size:.95rem}
+.logo{font-size:22px}
+.section h2{font-size:28px}
+.search-box{width:100%}
+}
