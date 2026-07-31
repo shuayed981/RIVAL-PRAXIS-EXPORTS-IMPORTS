@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 :root{
 --primary:#66101F;
@@ -11,18 +11,21 @@
 --shadow:0 15px 35px rgba(0,0,0,.08);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{padding-top:88px;font-family:Poppins,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
-header{position:fixed;top:0;left:0;width:100%;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--primary),var(--primary-dark));padding:18px 8%;z-index:1000;box-shadow:0 8px 20px rgba(0,0,0,.15);transition:background .25s,box-shadow .25s}
-header.is-scrolled{background:transparent;box-shadow:none}
+body{padding-top:88px;font-family:Montserrat,sans-serif;background:var(--bg);color:var(--text);line-height:1.8}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;letter-spacing:.02em}
+header{position:fixed;top:14px;left:max(14px,calc((100vw - 1400px) / 2));width:min(calc(100% - 28px),1400px);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(120deg,rgba(102,16,31,.97),rgba(55,10,20,.96));padding:12px 20px;border:1px solid rgba(212,175,55,.42);border-radius:18px;z-index:1000;box-shadow:0 12px 35px rgba(0,0,0,.24);backdrop-filter:blur(16px);transition:background .25s,box-shadow .25s}
+header.is-scrolled{background:rgba(255,255,255,.91);box-shadow:0 12px 35px rgba(0,0,0,.14)}
 header.is-scrolled h1,header.is-scrolled .menu-toggle{color:#111}
-header h1{color:#fff;font-size:1.75rem;margin:0;letter-spacing:3px}
-.menu-toggle{display:flex;padding:4px;border:0;background:none;color:#fff;cursor:pointer}
-nav{position:fixed;top:76px;right:0;left:0;display:none;max-height:calc(100vh - 76px);padding-bottom:20px;flex-direction:column;overflow-y:auto;background:#fff;overscroll-behavior:contain}
-nav.active{display:flex}
-nav a{color:#111;text-decoration:none;padding:16px 20px;border-bottom:1px solid #e5e5e5;font-weight:500;transition:.3s}
-nav a:hover{background:#f5f5f5;color:#111}
+header h1{color:#fff;font-size:2rem;margin:0;letter-spacing:3px}
+.menu-toggle{display:flex;padding:8px;border:0;border-radius:10px;background:none;color:#fff;cursor:pointer;transition:transform .3s,background .3s,color .3s,box-shadow .3s}
+.menu-toggle:hover,.menu-toggle:focus-visible{transform:translateY(-2px);background:linear-gradient(135deg,var(--accent),#b89220);color:#111;box-shadow:0 8px 20px rgba(212,175,55,.3);outline:none}
+nav{position:fixed;top:82px;right:max(14px,calc((100vw - 1400px) / 2));left:auto;display:none;width:min(390px,calc(100vw - 28px));max-height:calc(100vh - 98px);padding:10px;flex-direction:column;gap:4px;overflow-y:auto;border:1px solid rgba(212,175,55,.3);border-radius:16px;background:rgba(255,255,255,.97);box-shadow:0 20px 50px rgba(0,0,0,.22);overscroll-behavior:contain}
+nav.active{display:flex;animation:menu-reveal .22s ease-out}
+nav a{color:#111;text-decoration:none;padding:13px 16px;border:0;border-radius:10px;font-size:.9rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;transition:.3s}
+@keyframes menu-reveal{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+nav a:hover,nav a:focus-visible{background:linear-gradient(135deg,var(--accent),#b89220);color:#111;outline:none}
 main{max-width:1000px;margin:50px auto;padding:0 20px}
-h2{font-size:2rem;color:var(--primary);margin:20px 0 15px}
+h2{font-size:2.35rem;color:var(--primary);margin:20px 0 15px}
 h2:after{content:'';display:block;width:70px;height:4px;background:var(--accent);margin-top:10px;border-radius:10px}
 h3{margin:30px 0 10px;color:#222}
 p,li{font-size:1rem;color:#555}
@@ -36,8 +39,8 @@ footer{margin-top:60px;background:var(--primary);color:#fff;text-align:center;pa
 footer strong{display:block;line-height:1.8;margin-bottom:15px}
 @media(max-width:768px){
 body{padding-top:62px}
-header{padding:12px 20px}
+header{top:8px;left:8px;width:calc(100% - 16px);padding:10px 14px;border-radius:15px}
 header h1{font-size:1.35rem}
-nav{top:62px;max-height:calc(100vh - 62px)}
+nav{top:70px;right:8px;width:calc(100vw - 16px);max-height:calc(100vh - 78px)}
 section,.content,.policy{padding:25px}
 }
