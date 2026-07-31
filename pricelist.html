@@ -18,6 +18,8 @@
         .price-list tbody tr:nth-child(even) { background: #fafafa; }
         .price-list tbody tr:hover { background: #fff8df; }
         .price { color: var(--brand); font-weight: 700; }
+        .quote-btn { display: inline-block; min-width: 128px; padding: 10px 16px; border-radius: 999px; background: linear-gradient(135deg, var(--brand), var(--brand-dark)); color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform .2s, background .2s, color .2s; }
+        .quote-btn:hover, .quote-btn:focus-visible { transform: translateY(-2px); background: linear-gradient(135deg, var(--gold), #b89220); color: #111; }
         .price-note { margin-top: 28px !important; color: #666; font-size: 15px !important; }
         .price-list-footer p + p { margin-top: 6px; }
 
@@ -63,25 +65,9 @@
         <div class="price-list-wrap">
             <table class="price-list">
                 <thead>
-                    <tr><th scope="col">Reference</th><th scope="col">Category</th><th scope="col">MOQ</th><th scope="col">Wholesale Price (&euro;)</th></tr>
+                    <tr><th scope="col">Reference</th><th scope="col">Category</th><th scope="col">MOQ</th><th scope="col">Wholesale Price (&euro;)</th><th scope="col">Enquiry</th></tr>
                 </thead>
-                <tbody>
-                    <tr><td data-label="Reference">WOMEN-01</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;69.90</td></tr>
-                    <tr><td data-label="Reference">WOMEN-02</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;74.90</td></tr>
-                    <tr><td data-label="Reference">WOMEN-03</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;79.90</td></tr>
-                    <tr><td data-label="Reference">WOMEN-04</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;64.90</td></tr>
-                    <tr><td data-label="Reference">WOMEN-05</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;72.90</td></tr>
-                    <tr><td data-label="Reference">MEN-01</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;89.90</td></tr>
-                    <tr><td data-label="Reference">MEN-02</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;94.90</td></tr>
-                    <tr><td data-label="Reference">MEN-03</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;99.90</td></tr>
-                    <tr><td data-label="Reference">MEN-04</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;84.90</td></tr>
-                    <tr><td data-label="Reference">MEN-05</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;92.90</td></tr>
-                    <tr><td data-label="Reference">ACCESSORIES-01</td><td data-label="Category">Accessories</td><td data-label="MOQ">600 pcs</td><td data-label="Wholesale Price" class="price">&euro;24.90</td></tr>
-                    <tr><td data-label="Reference">ACCESSORIES-02</td><td data-label="Category">Accessories</td><td data-label="MOQ">600 pcs</td><td data-label="Wholesale Price" class="price">&euro;29.90</td></tr>
-                    <tr><td data-label="Reference">ACCESSORIES-03</td><td data-label="Category">Accessories</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;39.90</td></tr>
-                    <tr><td data-label="Reference">ACCESSORIES-04</td><td data-label="Category">Accessories</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;44.90</td></tr>
-                    <tr><td data-label="Reference">ACCESSORIES-05</td><td data-label="Category">Accessories</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;49.90</td></tr>
-                </tbody>
+                <tbody id="price-list-body"></tbody>
             </table>
         </div>
         <p class="price-note">Prices exclude VAT where applicable.</p>
@@ -94,5 +80,54 @@
     <p><a href="mailto:rivalpraxisunipessoallda@gmail.com">rivalpraxisunipessoallda@gmail.com</a></p>
 </footer>
 <script src="script.js"></script>
+<script>
+    const priceList = [
+        { prefix: "WOMEN", category: "Women's Fashion", prices: [69.90, 74.90, 79.90, 64.90, 72.90, 76.90, 68.90, 82.90, 71.90, 77.90, 84.90, 73.90, 66.90, 81.90, 75.90, 78.90, 86.90, 70.90, 83.90, 79.90] },
+        { prefix: "MEN", category: "Men's Fashion", prices: [89.90, 94.90, 99.90, 84.90, 92.90, 96.90, 104.90, 87.90, 98.90, 91.90, 106.90, 93.90, 88.90, 101.90, 95.90, 103.90, 90.90, 97.90, 108.90, 99.90] },
+        { prefix: "ACCESSORIES", category: "Accessories", prices: [24.90, 29.90, 39.90, 44.90, 49.90, 27.90, 34.90, 41.90, 32.90, 46.90, 52.90, 36.90, 28.90, 43.90, 54.90, 31.90, 47.90, 38.90, 56.90, 42.90] }
+    ];
+
+    const recipient = "rivalpraxisunipessoallda@gmail.com";
+    const tableBody = document.getElementById("price-list-body");
+
+    priceList.forEach(({ prefix, category, prices }) => {
+        prices.forEach((price, index) => {
+            const reference = `${prefix}-${String(index + 1).padStart(2, "0")}`;
+            const formattedPrice = `€${price.toFixed(2)}`;
+            const moq = prefix === "ACCESSORIES"
+                ? (index < 2 ? 600 : index < 4 ? 500 : 400)
+                : (index < 3 ? 500 : 400);
+            const subject = `Quotation Request - ${reference} - ${formattedPrice}`;
+            const body = `Hello RIVAL PRAXIS,\n\nI would like to request a quotation for product ${reference}.\nIndicative wholesale price: ${formattedPrice}\nMinimum order quantity: ${moq} pcs\n\nPlease send me your best available offer and further details.\n\nThank you.`;
+            const quoteUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            const row = document.createElement("tr");
+            const values = [
+                ["Reference", reference],
+                ["Category", category],
+                ["MOQ", `${moq} pcs`],
+                ["Wholesale Price", formattedPrice]
+            ];
+            values.forEach(([label, value], cellIndex) => {
+                const cell = document.createElement("td");
+                cell.dataset.label = label;
+                cell.textContent = value;
+                if (cellIndex === 3) cell.className = "price";
+                row.appendChild(cell);
+            });
+
+            const actionCell = document.createElement("td");
+            actionCell.dataset.label = "Enquiry";
+            const quoteButton = document.createElement("a");
+            quoteButton.className = "quote-btn";
+            quoteButton.href = quoteUrl;
+            quoteButton.textContent = "Request Quote";
+            quoteButton.setAttribute("aria-label", `Request a quote for ${reference} at ${formattedPrice}`);
+            actionCell.appendChild(quoteButton);
+            row.appendChild(actionCell);
+            tableBody.appendChild(row);
+        });
+    });
+</script>
 </body>
 </html>
