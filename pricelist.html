@@ -1,164 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wholesale Price List | RIVAL PRAXIS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wholesale Price List | RIVAL PRAXIS</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .price-list-intro { padding-bottom: 40px; }
+        .price-list-wrap { width: min(1180px, 100%); margin: 0 auto; overflow: hidden; border: 1px solid #e7e7e7; border-radius: 18px; background: #fff; box-shadow: var(--shadow); }
+        .price-list { width: 100%; border-collapse: collapse; }
+        .price-list th, .price-list td { padding: 18px 20px; text-align: center; }
+        .price-list thead { background: linear-gradient(135deg, var(--brand), var(--brand-dark)); color: #fff; }
+        .price-list th { font-size: 15px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
+        .price-list tbody tr { border-bottom: 1px solid #ececec; transition: background .2s; }
+        .price-list tbody tr:last-child { border-bottom: 0; }
+        .price-list tbody tr:nth-child(even) { background: #fafafa; }
+        .price-list tbody tr:hover { background: #fff8df; }
+        .price { color: var(--brand); font-weight: 700; }
+        .price-note { margin-top: 28px !important; color: #666; font-size: 15px !important; }
+        .price-list-footer p + p { margin-top: 6px; }
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        @media (max-width: 700px) {
+            .price-list-section { padding-top: 35px; }
+            .price-list-wrap { overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+            .price-list, .price-list tbody, .price-list tr, .price-list td { display: block; width: 100%; }
+            .price-list thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+            .price-list tbody { display: grid; gap: 18px; }
+            .price-list tbody tr { overflow: hidden; border: 1px solid #e7e7e7; border-radius: 15px; background: #fff !important; box-shadow: 0 8px 24px rgba(0,0,0,.09); }
+            .price-list td { display: grid; grid-template-columns: minmax(105px, .8fr) minmax(0, 1.2fr); gap: 14px; padding: 13px 16px; border-bottom: 1px solid #eee; text-align: right; overflow-wrap: anywhere; }
+            .price-list td:last-child { border-bottom: 0; }
+            .price-list td::before { color: #666; font-size: 13px; font-weight: 600; letter-spacing: .03em; text-align: left; text-transform: uppercase; content: attr(data-label); }
+        }
 
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Poppins,sans-serif;
-}
-
-body{
-background:#0f0f0f;
-color:white;
-}
-
-header{
-padding:70px 20px;
-text-align:center;
-border-bottom:1px solid gold;
-}
-
-header h1{
-font-size:48px;
-color:gold;
-margin-bottom:15px;
-}
-
-header p{
-max-width:900px;
-margin:auto;
-color:#ccc;
-line-height:1.8;
-}
-
-.container{
-width:95%;
-max-width:1300px;
-margin:60px auto;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-thead{
-background:gold;
-color:#000;
-}
-
-th,td{
-padding:18px;
-text-align:center;
-}
-
-tbody tr:nth-child(odd){
-background:#181818;
-}
-
-tbody tr:nth-child(even){
-background:#111;
-}
-
-tbody tr:hover{
-background:#242424;
-}
-
-.price{
-color:#ffd54a;
-font-weight:bold;
-}
-
-footer{
-margin-top:70px;
-padding:35px;
-text-align:center;
-border-top:1px solid #333;
-color:#aaa;
-}
-
-</style>
-
+        @media (max-width: 380px) {
+            .price-list td { grid-template-columns: 1fr; gap: 4px; text-align: left; }
+        }
+    </style>
 </head>
-
 <body>
-
 <header>
-
-<h1>WHOLESALE PRICE LIST</h1>
-
-<p>
-RIVAL PRAXIS UNIPESSOAL LDA
-<br><br>
-Indicative wholesale prices for international business customers.
-Minimum Order Quantity (MOQ) applies.
-</p>
-
+    <div class="container">
+        <a class="brand-logo" href="index.html" aria-label="RIVAL PRAXIS home"><img src="images/rival-praxis-logo.png" alt="RIVAL PRAXIS"></a>
+        <button aria-label="Menu" class="menu-toggle" type="button"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></button>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="women.html">Women</a>
+            <a href="men.html">Men</a>
+            <a href="accessories.html">Accessories</a>
+            <a href="pricelist.html" aria-current="page">Price List</a>
+        </nav>
+    </div>
 </header>
 
-<div class="container">
+<main>
+    <section class="section collection-intro price-list-intro">
+        <h1>Wholesale Price List</h1>
+        <p>Indicative wholesale prices for international business customers. Minimum Order Quantity (MOQ) applies.</p>
+    </section>
 
-<table>
+    <section class="section gray price-list-section" aria-label="Wholesale prices">
+        <div class="price-list-wrap">
+            <table class="price-list">
+                <thead>
+                    <tr><th scope="col">Reference</th><th scope="col">Category</th><th scope="col">MOQ</th><th scope="col">Wholesale Price (&euro;)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td data-label="Reference">WOMEN-01</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;69.90</td></tr>
+                    <tr><td data-label="Reference">WOMEN-02</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;74.90</td></tr>
+                    <tr><td data-label="Reference">WOMEN-03</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;79.90</td></tr>
+                    <tr><td data-label="Reference">WOMEN-04</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;64.90</td></tr>
+                    <tr><td data-label="Reference">WOMEN-05</td><td data-label="Category">Women's Fashion</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;72.90</td></tr>
+                    <tr><td data-label="Reference">MEN-01</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;89.90</td></tr>
+                    <tr><td data-label="Reference">MEN-02</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;94.90</td></tr>
+                    <tr><td data-label="Reference">MEN-03</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;99.90</td></tr>
+                    <tr><td data-label="Reference">MEN-04</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;84.90</td></tr>
+                    <tr><td data-label="Reference">MEN-05</td><td data-label="Category">Men's Fashion</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;92.90</td></tr>
+                    <tr><td data-label="Reference">ACCESSORIES-01</td><td data-label="Category">Accessories</td><td data-label="MOQ">600 pcs</td><td data-label="Wholesale Price" class="price">&euro;24.90</td></tr>
+                    <tr><td data-label="Reference">ACCESSORIES-02</td><td data-label="Category">Accessories</td><td data-label="MOQ">600 pcs</td><td data-label="Wholesale Price" class="price">&euro;29.90</td></tr>
+                    <tr><td data-label="Reference">ACCESSORIES-03</td><td data-label="Category">Accessories</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;39.90</td></tr>
+                    <tr><td data-label="Reference">ACCESSORIES-04</td><td data-label="Category">Accessories</td><td data-label="MOQ">500 pcs</td><td data-label="Wholesale Price" class="price">&euro;44.90</td></tr>
+                    <tr><td data-label="Reference">ACCESSORIES-05</td><td data-label="Category">Accessories</td><td data-label="MOQ">400 pcs</td><td data-label="Wholesale Price" class="price">&euro;49.90</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="price-note">Prices exclude VAT where applicable.</p>
+    </section>
+</main>
 
-<thead>
-
-<tr>
-
-<th>Reference</th>
-<th>Category</th>
-<th>MOQ</th>
-<th>Wholesale Price (€)</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr><td>WOMEN-01</td><td>Women's Fashion</td><td>500 pcs</td><td class="price">€69.90</td></tr>
-<tr><td>WOMEN-02</td><td>Women's Fashion</td><td>500 pcs</td><td class="price">€74.90</td></tr>
-<tr><td>WOMEN-03</td><td>Women's Fashion</td><td>500 pcs</td><td class="price">€79.90</td></tr>
-<tr><td>WOMEN-04</td><td>Women's Fashion</td><td>400 pcs</td><td class="price">€64.90</td></tr>
-<tr><td>WOMEN-05</td><td>Women's Fashion</td><td>400 pcs</td><td class="price">€72.90</td></tr>
-
-<tr><td>MEN-01</td><td>Men's Fashion</td><td>500 pcs</td><td class="price">€89.90</td></tr>
-<tr><td>MEN-02</td><td>Men's Fashion</td><td>500 pcs</td><td class="price">€94.90</td></tr>
-<tr><td>MEN-03</td><td>Men's Fashion</td><td>500 pcs</td><td class="price">€99.90</td></tr>
-<tr><td>MEN-04</td><td>Men's Fashion</td><td>400 pcs</td><td class="price">€84.90</td></tr>
-<tr><td>MEN-05</td><td>Men's Fashion</td><td>400 pcs</td><td class="price">€92.90</td></tr>
-
-<tr><td>ACCESSORIES-01</td><td>Accessories</td><td>600 pcs</td><td class="price">€24.90</td></tr>
-<tr><td>ACCESSORIES-02</td><td>Accessories</td><td>600 pcs</td><td class="price">€29.90</td></tr>
-<tr><td>ACCESSORIES-03</td><td>Accessories</td><td>500 pcs</td><td class="price">€39.90</td></tr>
-<tr><td>ACCESSORIES-04</td><td>Accessories</td><td>500 pcs</td><td class="price">€44.90</td></tr>
-<tr><td>ACCESSORIES-05</td><td>Accessories</td><td>400 pcs</td><td class="price">€49.90</td></tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-<footer>
-
-<p><strong>RIVAL PRAXIS UNIPESSOAL LDA</strong></p>
-
-<p>Wholesale Import & Export</p>
-
-<p>Email: rivalpraxisunipessoallda@gmail.com</p>
-
-<p>Prices exclude VAT where applicable.</p>
-
+<footer class="price-list-footer">
+    <p><strong>RIVAL PRAXIS UNIPESSOAL LDA</strong></p>
+    <p>Wholesale Import &amp; Export</p>
+    <p><a href="mailto:rivalpraxisunipessoallda@gmail.com">rivalpraxisunipessoallda@gmail.com</a></p>
 </footer>
-
+<script src="script.js"></script>
 </body>
 </html>
