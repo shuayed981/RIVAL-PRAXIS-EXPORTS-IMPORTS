@@ -29,6 +29,8 @@ h2{font-size:2.35rem;color:var(--primary);margin:20px 0 15px}
 h2:after{content:'';display:block;width:70px;height:4px;background:var(--accent);margin-top:10px;border-radius:10px}
 h3{margin:30px 0 10px;color:#222}
 p,li{font-size:1rem;color:#555}
+a{color:var(--primary);font-weight:600}
+main a{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}
 ul{padding-left:22px;margin:18px 0}
 .notice{background:#fff8e8;border-left:5px solid var(--accent);padding:20px;border-radius:12px;margin:25px 0}
 section,.content,.policy{background:var(--card);padding:40px;border-radius:20px;box-shadow:var(--shadow);margin:40px auto}
