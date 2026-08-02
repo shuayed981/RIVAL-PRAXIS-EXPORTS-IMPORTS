@@ -141,8 +141,8 @@ footer p + p a { display: inline-block; padding: 4px 0; }
   .section h2 { font-size: 34px; }
   .card img, .product-card img { height: 350px; }
   .featured-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .featured-lead { grid-column: span 2; grid-row: auto; }
-  .featured-lead img { height: min(68vw, 620px); }
+  .featured-lead { grid-column: auto; grid-row: auto; }
+  .featured-lead img { height: 390px; }
   .about-store { grid-template-columns: 1fr; gap: 40px; }
 }
 
