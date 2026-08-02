@@ -3,11 +3,15 @@
   "name": "rival-praxis-reduniq-payments",
   "main": "worker.js",
   "compatibility_date": "2026-08-01",
-  "workers_dev": true,
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "payments.rivalpraxis.com", "custom_domain": true }
+  ],
   "vars": {
     "SITE_ORIGIN": "https://rivalpraxis.com",
     "API_ORIGIN": "https://payments.rivalpraxis.com",
     "REDUNIQ_ENVIRONMENT": "sandbox",
+    "REDUNIQ_API_VERSION": "7.0",
     "REDUNIQ_PAYMENT_SOLUTION": ""
   },
   "kv_namespaces": [

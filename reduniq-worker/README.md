@@ -10,6 +10,10 @@ This worker keeps REDUNIQ credentials out of the public website and allows custo
 4. Replace the KV IDs in `wrangler.jsonc`, deploy in sandbox mode, and connect `payments.rivalpraxis.com` to the Worker.
 5. Ask REDUNIQ to validate the sandbox flow. Only after acceptance, change `REDUNIQ_ENVIRONMENT` to `production` and add production credentials as secrets.
 
+`wrangler.jsonc` defaults to the current REDUNIQ REST API v7.0 and attaches the Worker to `payments.rivalpraxis.com` as a Cloudflare Custom Domain. If REDUNIQ explicitly assigns API v6.0 to this merchant, change only `REDUNIQ_API_VERSION` to `6.0`. The Worker uses `transaction.status` as REDUNIQ's authoritative result and also requires the exact approved server-side amount.
+
+The manual GitHub workflow `.github/workflows/deploy-payment-worker.yml` deploys the Worker only after the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are installed. It deliberately refuses to deploy while KV IDs or the payment-solution code are placeholders.
+
 The public payment switch in `payment-config.js` must remain `enabled: false` until the Worker hostname resolves, TLS is valid, sandbox testing is accepted and production credentials are installed. If the acquiring agreement names Getnet rather than REDUNIQ, obtain the exact Getnet product and API specification before deployment; Getnet credentials are not interchangeable with REDUNIQ credentials.
 
 ## Approved quotation record

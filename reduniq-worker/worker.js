@@ -1,10 +1,8 @@
-const LIVE_GATEWAY = "https://pagamentos.reduniq.pt/api-gateway/v6.0/rest/";
-const SANDBOX_GATEWAY = "https://pagamentos.sandbox.reduniq.pt/api-gateway/v6.0/rest/";
-const SUCCESS_RESULT_CODES = new Set([
-  "10000000", "20000000", "30000000", "50000000", "60000000",
-  "70000000", "80000000", "9000000000", "10000000000", "11000000000",
-  "12000000000", "13000000000", "14000000000", "15000000000", "16000000000"
-]);
+const gatewayEndpoint = (env) => {
+  const version = env.REDUNIQ_API_VERSION === "6.0" ? "6.0" : "7.0";
+  const host = env.REDUNIQ_ENVIRONMENT === "production" ? "pagamentos.reduniq.pt" : "pagamentos.sandbox.reduniq.pt";
+  return `https://${host}/api-gateway/v${version}/rest/`;
+};
 const SESSION_TTL_SECONDS = 86400 * 7;
 const RATE_WINDOW_SECONDS = 60 * 15;
 const RATE_LIMIT = 12;
@@ -71,8 +69,7 @@ async function getApprovedQuote(env, quoteReference, email) {
 }
 
 async function gateway(env, payload) {
-  const endpoint = env.REDUNIQ_ENVIRONMENT === "production" ? LIVE_GATEWAY : SANDBOX_GATEWAY;
-  const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(payload) });
+  const response = await fetch(gatewayEndpoint(env), { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(payload) });
   if (!response.ok) throw new Error(`Gateway HTTP ${response.status}`);
   return response.json();
 }
@@ -145,7 +142,9 @@ async function verifyToken(env, token) {
   const result = await gateway(env, { method: "getResult", api: apiCredentials(env), token: normalizedToken });
   const gatewayAmount = Number(result?.payment?.amount ?? result?.paymentAmount);
   const resultCode = String(result?.result?.code || "");
-  const paid = SUCCESS_RESULT_CODES.has(resultCode) && Number(result?.transaction?.status) === 4 && Number.isSafeInteger(gatewayAmount) && gatewayAmount === session.total;
+  // REDUNIQ specifies transaction.status as the authoritative success field.
+  // An exact server-side amount match remains mandatory before fulfilment.
+  const paid = Number(result?.transaction?.status) === 4 && Number.isSafeInteger(gatewayAmount) && gatewayAmount === session.total;
   if (paid) {
     const key = quoteKey(session.quoteReference);
     const quote = await env.QUOTES.get(key, "json");

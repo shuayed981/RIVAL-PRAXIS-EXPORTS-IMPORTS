@@ -1,0 +1,32 @@
+name: Deploy payment Worker
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - name: Reject incomplete payment configuration
+        shell: bash
+        run: |
+          if grep -q "REPLACE_WITH" reduniq-worker/wrangler.jsonc; then
+            echo "Replace the KV namespace placeholders before deployment."
+            exit 1
+          fi
+          if grep -q '"REDUNIQ_PAYMENT_SOLUTION": ""' reduniq-worker/wrangler.jsonc; then
+            echo "Set the REDUNIQ payment solution supplied for this merchant."
+            exit 1
+          fi
+      - name: Deploy Worker and custom domain
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: reduniq-worker
+          command: deploy
