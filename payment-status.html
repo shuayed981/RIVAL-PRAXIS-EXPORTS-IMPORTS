@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" href="images/rival-praxis-logo.png">
+  <title>Payment Status | RIVAL PRAXIS</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="payment.css">
+</head>
+<body class="payment-page">
+  <header><div class="container"><a class="brand-logo" href="index.html" aria-label="RIVAL PRAXIS home"><img src="images/rival-praxis-logo.png" alt="RIVAL PRAXIS"></a><button aria-label="Menu" class="menu-toggle" type="button"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></button><nav><a href="index.html">Home</a><a href="pay.html">Pay a Quote</a><a href="payments.html">Payment Policy</a><a href="index.html#contact">Contact</a></nav></div></header>
+  <main class="payment-main status-main">
+    <section class="status-card" id="status-card" aria-live="polite">
+      <div class="status-icon" id="status-icon" aria-hidden="true">&hellip;</div>
+      <p class="eyebrow">Payment verification</p>
+      <h1 id="status-title">Checking your payment</h1>
+      <p id="status-message">Please wait while we securely verify the transaction result.</p>
+      <dl id="status-details" hidden><div><dt>Quotation</dt><dd id="status-reference"></dd></div><div><dt>Transaction</dt><dd id="status-transaction"></dd></div><div><dt>Amount</dt><dd id="status-amount"></dd></div></dl>
+      <div class="status-actions"><a class="btn" href="index.html">Return Home</a><a class="text-link" href="mailto:rivalpraxisunipessoallda@gmail.com?subject=Payment%20Support">Contact Payment Support</a></div>
+    </section>
+  </main>
+  <footer><p>&copy; 2026 RIVAL PRAXIS UNIPESSOAL LDA &bull; NIF: 519497074</p><p><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="payments.html">Payments</a></p></footer>
+  <script src="script.js"></script>
+  <script src="payment-status.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+.payment-page{background:#f2ede6}
+.payment-main{min-height:calc(100svh - 180px);padding:70px clamp(20px,7vw,110px) 90px}
+.payment-intro{max-width:850px;margin:0 auto 42px;text-align:center}
+.payment-intro h1,.status-card h1{margin:8px 0 16px;color:var(--brand);font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(42px,6vw,68px);line-height:1}
+.payment-intro>p:last-child{max-width:720px;margin:auto;color:var(--muted)}
+.payment-shell{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);max-width:1200px;margin:auto;background:var(--surface);box-shadow:var(--shadow)}
+.payment-form-card{padding:clamp(28px,5vw,62px)}
+.payment-assurance{padding:clamp(28px,4vw,52px);background:#211a16;color:#fff}
+.payment-assurance h2{margin:8px 0 24px;font-family:"Cormorant Garamond",Georgia,serif;font-size:38px;line-height:1.05}
+.payment-assurance ul{display:grid;gap:18px;margin:0;padding:0;list-style:none}
+.payment-assurance li{position:relative;padding-left:28px;color:#e8e0d8;font-size:14px}
+.payment-assurance li::before{position:absolute;top:1px;left:0;color:#c7a787;content:"\2713"}
+.merchant-details{display:grid;gap:4px;margin-top:36px;padding-top:26px;border-top:1px solid rgba(255,255,255,.16);color:#d6ccc3;font-size:12px}
+.merchant-details strong{margin-bottom:5px;color:#fff;letter-spacing:.12em;text-transform:uppercase}
+.step-label{display:flex;margin-bottom:24px;align-items:center;gap:12px;color:var(--brand);font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.step-label span{display:grid;width:34px;height:34px;place-items:center;background:var(--brand);color:#fff;font-size:10px}
+.payment-form-card form{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.payment-form-card label{font-size:12px;font-weight:600;letter-spacing:.04em}
+.payment-form-card input:not([type=checkbox]){width:100%;padding:15px 16px;border:1px solid #d8cec3;background:#fff;font:inherit;outline:none}
+.payment-form-card input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(155,118,87,.14)}
+.payment-form-card .payment-submit,.form-message{grid-column:1/-1}
+.payment-submit{width:100%;margin-top:14px;border:0;cursor:pointer}
+.payment-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.form-message{min-height:24px;margin-top:4px;color:#8a2e2e;font-size:13px}
+.quote-summary{margin-top:38px;padding-top:34px;border-top:1px solid #e6ddd3}
+.quote-summary dl,.status-card dl{display:grid;gap:0;margin:0}
+.quote-summary dl div,.status-card dl div{display:flex;padding:12px 0;justify-content:space-between;gap:20px;border-bottom:1px solid #eee7df}
+.quote-summary dt,.status-card dt{color:var(--muted);font-size:13px}
+.quote-summary dd,.status-card dd{margin:0;font-weight:600;text-align:right}
+.quote-summary .summary-total{padding:18px 0;border-bottom:0;font-size:20px}
+.payment-consent{display:flex;margin-top:18px;align-items:flex-start;gap:10px;font-size:12px!important;font-weight:400!important;line-height:1.6}
+.payment-consent input{margin-top:4px;accent-color:var(--brand)}
+.payment-consent a,.text-link{color:var(--brand);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.status-main{display:grid;place-items:center}
+.status-card{width:min(680px,100%);padding:clamp(34px,7vw,72px);background:var(--surface);box-shadow:var(--shadow);text-align:center}
+.status-icon{display:grid;width:68px;height:68px;margin:0 auto 22px;place-items:center;border:1px solid #c7b7a6;border-radius:50%;color:var(--brand);font-size:30px}
+.status-card.success .status-icon{border-color:#4d8060;color:#376f4c}
+.status-card.error .status-icon{border-color:#a85252;color:#983e3e}
+.status-card h1{font-size:clamp(38px,6vw,56px)}
+.status-card>p{color:var(--muted)}
+.status-card dl{margin-top:28px;text-align:left}
+.status-actions{display:flex;margin-top:32px;align-items:center;justify-content:center;flex-wrap:wrap;gap:20px}
+@media(max-width:850px){.payment-shell{grid-template-columns:1fr}.payment-assurance{order:-1}.payment-form-card form{grid-template-columns:1fr}.payment-main{padding-top:48px}}
+@media(max-width:500px){.payment-main{padding:34px 14px 60px}.payment-intro{margin-bottom:28px}.payment-form-card,.payment-assurance{padding:28px 20px}.quote-summary dl div,.status-card dl div{align-items:flex-start;flex-direction:column;gap:4px}.quote-summary dd,.status-card dd{text-align:left}.status-actions .btn{width:100%}}

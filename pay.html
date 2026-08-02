@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Secure payment portal for approved RIVAL PRAXIS wholesale quotations.">
+  <link rel="icon" type="image/png" href="images/rival-praxis-logo.png">
+  <title>Pay an Approved Quote | RIVAL PRAXIS</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="payment.css">
+</head>
+<body class="payment-page">
+  <header>
+    <div class="container">
+      <a class="brand-logo" href="index.html" aria-label="RIVAL PRAXIS home"><img src="images/rival-praxis-logo.png" alt="RIVAL PRAXIS"></a>
+      <button aria-label="Menu" class="menu-toggle" type="button"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></button>
+      <nav><a href="index.html">Home</a><a href="women.html">Women</a><a href="men.html">Men</a><a href="accessories.html">Accessories</a><a href="payments.html">Payment Policy</a></nav>
+    </div>
+  </header>
+  <main class="payment-main">
+    <section class="payment-intro">
+      <p class="eyebrow">Secure wholesale payments</p>
+      <h1>Pay an Approved Quote</h1>
+      <p>Use the quotation reference and billing email shown on your approved RIVAL PRAXIS quotation. Your payable amount is retrieved securely and cannot be changed in the browser.</p>
+    </section>
+    <section class="payment-shell">
+      <div class="payment-form-card">
+        <div class="step-label"><span>01</span> Find your quotation</div>
+        <form id="quote-lookup-form" novalidate>
+          <label for="quote-reference">Quotation reference</label>
+          <input id="quote-reference" name="quoteReference" autocomplete="off" maxlength="50" placeholder="Example: RP-2026-00124" required>
+          <label for="billing-email">Billing email</label>
+          <input id="billing-email" name="email" type="email" autocomplete="email" maxlength="150" placeholder="name@company.com" required>
+          <button class="btn payment-submit" type="submit">Retrieve Secure Total</button>
+          <p class="form-message" id="lookup-message" role="status" aria-live="polite"></p>
+        </form>
+        <div id="quote-summary" class="quote-summary" hidden>
+          <div class="step-label"><span>02</span> Review and pay</div>
+          <dl>
+            <div><dt>Quotation</dt><dd id="summary-reference"></dd></div>
+            <div><dt>Company</dt><dd id="summary-company"></dd></div>
+            <div><dt>Goods</dt><dd id="summary-subtotal"></dd></div>
+            <div><dt>VAT / taxes</dt><dd id="summary-tax"></dd></div>
+            <div><dt>Shipping</dt><dd id="summary-shipping"></dd></div>
+            <div class="summary-total"><dt>Total payable</dt><dd id="summary-total"></dd></div>
+          </dl>
+          <label class="payment-consent"><input id="accept-terms" type="checkbox"> <span>I confirm that I am authorized to pay for this business and accept the <a href="terms.html" target="_blank">Terms</a>, <a href="payments.html" target="_blank">Payment Policy</a>, and <a href="privacy.html" target="_blank">Privacy Policy</a>.</span></label>
+          <button class="btn payment-submit" id="start-payment" type="button" disabled>Continue to Secure Payment</button>
+          <p class="form-message" id="payment-message" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+      <aside class="payment-assurance">
+        <p class="eyebrow">Before you pay</p>
+        <h2>Protected Payment Process</h2>
+        <ul>
+          <li>Your quotation total is verified by our secure payment service.</li>
+          <li>Payment details are entered only on the REDUNIQ secure payment environment.</li>
+          <li>RIVAL PRAXIS does not receive or store your full card details.</li>
+          <li>You receive a clear success or error result after payment verification.</li>
+        </ul>
+        <div class="merchant-details"><strong>Merchant</strong><span>RIVAL PRAXIS UNIPESSOAL LDA</span><span>NIF 519497074</span><span>Rua de Manhica 1800-245, Lisboa, Portugal</span><span>+351 920 020 495</span></div>
+      </aside>
+    </section>
+  </main>
+  <footer><p>&copy; 2026 RIVAL PRAXIS UNIPESSOAL LDA &bull; NIF: 519497074</p><p><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns</a><a href="payments.html">Payments</a></p></footer>
+  <script src="script.js"></script>
+  <script src="payment.js"></script>
+</body>
+</html>
