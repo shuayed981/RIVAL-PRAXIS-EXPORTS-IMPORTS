@@ -1,5 +1,13 @@
 const LIVE_GATEWAY = "https://pagamentos.reduniq.pt/api-gateway/v6.0/rest/";
 const SANDBOX_GATEWAY = "https://pagamentos.sandbox.reduniq.pt/api-gateway/v6.0/rest/";
+const SUCCESS_RESULT_CODES = new Set([
+  "10000000", "20000000", "30000000", "50000000", "60000000",
+  "70000000", "80000000", "9000000000", "10000000000", "11000000000",
+  "12000000000", "13000000000", "14000000000", "15000000000", "16000000000"
+]);
+const SESSION_TTL_SECONDS = 86400 * 7;
+const RATE_WINDOW_SECONDS = 60 * 15;
+const RATE_LIMIT = 12;
 
 const json = (body, status = 200, origin = "https://rivalpraxis.com") => new Response(JSON.stringify(body), {
   status,
@@ -16,6 +24,11 @@ const json = (body, status = 200, origin = "https://rivalpraxis.com") => new Res
 const normalize = (value, max = 150) => String(value || "").trim().slice(0, max);
 const quoteKey = (reference) => `quote:${normalize(reference, 50).toUpperCase()}`;
 const tokenKey = (token) => `token:${normalize(token, 80)}`;
+const rateKey = (request, action) => {
+  const address = normalize(request.headers.get("CF-Connecting-IP") || "unknown", 64);
+  return `rate:${action}:${address}`;
+};
+const auditKey = (reference) => `audit:${normalize(reference, 50).toUpperCase()}:${Date.now()}:${crypto.randomUUID()}`;
 const orderDate = () => new Date().toISOString().slice(0, 19).replace("T", " ");
 
 function allowedOrigin(request, env) {
@@ -27,6 +40,23 @@ function allowedOrigin(request, env) {
 async function bodyOf(request) {
   if (!(request.headers.get("Content-Type") || "").includes("application/json")) throw new Error("JSON_REQUIRED");
   return request.json();
+}
+
+async function enforceRateLimit(request, env, action) {
+  const key = rateKey(request, action);
+  const current = Number(await env.QUOTES.get(key)) || 0;
+  if (current >= RATE_LIMIT) return false;
+  await env.QUOTES.put(key, String(current + 1), { expirationTtl: RATE_WINDOW_SECONDS });
+  return true;
+}
+
+async function audit(env, reference, event, details = {}) {
+  await env.QUOTES.put(auditKey(reference), JSON.stringify({
+    event,
+    quoteReference: normalize(reference, 50).toUpperCase(),
+    at: new Date().toISOString(),
+    ...details
+  }));
 }
 
 async function getApprovedQuote(env, quoteReference, email) {
@@ -57,6 +87,7 @@ function publicQuote(quote) {
 }
 
 async function lookupQuote(request, env, origin) {
+  if (!(await enforceRateLimit(request, env, "lookup"))) return json({ message: "Too many attempts. Wait 15 minutes before trying again." }, 429, origin);
   const input = await bodyOf(request);
   const quote = await getApprovedQuote(env, input.quoteReference, input.email);
   if (!quote) return json({ message: "The quotation reference or billing email could not be verified." }, 404, origin);
@@ -66,10 +97,15 @@ async function lookupQuote(request, env, origin) {
 }
 
 async function initPayment(request, env, origin) {
+  if (!(await enforceRateLimit(request, env, "payment"))) return json({ message: "Too many payment attempts. Wait 15 minutes before trying again." }, 429, origin);
   const input = await bodyOf(request);
   const quote = await getApprovedQuote(env, input.quoteReference, input.email);
   if (!quote) return json({ message: "The quotation could not be verified." }, 404, origin);
   if (quote.paymentStatus === "paid") return json({ message: "This quotation is already paid." }, 409, origin);
+  if (quote.paymentToken && quote.paymentTokenCreatedAt && Date.now() - Date.parse(quote.paymentTokenCreatedAt) < SESSION_TTL_SECONDS * 1000) {
+    const existingSession = await env.QUOTES.get(tokenKey(quote.paymentToken), "json");
+    if (existingSession?.redirectUrl) return json({ token: quote.paymentToken, redirectUrl: existingSession.redirectUrl }, 200, origin);
+  }
   if (quote.expiresAt && Date.parse(quote.expiresAt) < Date.now()) return json({ message: "This quotation has expired." }, 409, origin);
   const site = env.SITE_ORIGIN || "https://rivalpraxis.com";
   const apiOrigin = env.API_ORIGIN || "https://payments.rivalpraxis.com";
@@ -95,7 +131,10 @@ async function initPayment(request, env, origin) {
   if (quote.shipping > 0 && quote.shippingAddress) payload.buyer.shipping = { name: normalize(quote.shippingAddress.name, 32), street1: normalize(quote.shippingAddress.street1, 100), street2: normalize(quote.shippingAddress.street2, 100), city: normalize(quote.shippingAddress.city, 40), state: normalize(quote.shippingAddress.state, 40), zipCode: normalize(quote.shippingAddress.zipCode, 20), country: normalize(quote.shippingAddress.country || "pt", 2), phone: normalize(quote.phone, 15), amount: quote.shipping };
   const result = await gateway(env, payload);
   if (result?.result?.code !== "00000000" || !result.token || !result.redirectUrl) return json({ message: "REDUNIQ could not initialize this payment." }, 502, origin);
-  await env.QUOTES.put(tokenKey(result.token), JSON.stringify({ quoteReference: quote.quoteReference, total: quote.total, currency: quote.currency || "EUR", createdAt: Date.now() }), { expirationTtl: 86400 * 7 });
+  const createdAt = new Date().toISOString();
+  await env.QUOTES.put(tokenKey(result.token), JSON.stringify({ quoteReference: quote.quoteReference, total: quote.total, currency: quote.currency || "EUR", redirectUrl: result.redirectUrl, createdAt }), { expirationTtl: SESSION_TTL_SECONDS });
+  await env.QUOTES.put(quoteKey(quote.quoteReference), JSON.stringify({ ...quote, paymentStatus: "pending", paymentToken: result.token, paymentTokenCreatedAt: createdAt }));
+  await audit(env, quote.quoteReference, "payment_initialized", { token: result.token });
   return json({ token: result.token, redirectUrl: result.redirectUrl }, 200, origin);
 }
 
@@ -105,16 +144,22 @@ async function verifyToken(env, token) {
   if (!session) return null;
   const result = await gateway(env, { method: "getResult", api: apiCredentials(env), token: normalizedToken });
   const gatewayAmount = Number(result?.payment?.amount ?? result?.paymentAmount);
-  const paid = result?.result?.code === "00000000" && Number(result?.transaction?.status) === 4 && Number.isSafeInteger(gatewayAmount) && gatewayAmount === session.total;
+  const resultCode = String(result?.result?.code || "");
+  const paid = SUCCESS_RESULT_CODES.has(resultCode) && Number(result?.transaction?.status) === 4 && Number.isSafeInteger(gatewayAmount) && gatewayAmount === session.total;
   if (paid) {
     const key = quoteKey(session.quoteReference);
     const quote = await env.QUOTES.get(key, "json");
-    if (quote) await env.QUOTES.put(key, JSON.stringify({ ...quote, paymentStatus: "paid", paidAt: new Date().toISOString(), transactionId: normalize(result?.transaction?.id, 50) }));
+    if (quote && quote.paymentStatus !== "paid") {
+      const transactionId = normalize(result?.transaction?.id, 50);
+      await env.QUOTES.put(key, JSON.stringify({ ...quote, paymentStatus: "paid", paidAt: new Date().toISOString(), transactionId }));
+      await audit(env, session.quoteReference, "payment_confirmed", { transactionId, total: session.total, currency: session.currency, resultCode });
+    }
   }
   return { paid, session, result };
 }
 
 async function paymentResult(request, env, origin) {
+  if (!(await enforceRateLimit(request, env, "result"))) return json({ message: "Too many verification attempts. Wait before trying again." }, 429, origin);
   const input = await bodyOf(request);
   const verified = await verifyToken(env, input.token);
   if (!verified) return json({ message: "The payment session was not found." }, 404, origin);

@@ -10,6 +10,8 @@ This worker keeps REDUNIQ credentials out of the public website and allows custo
 4. Replace the KV IDs in `wrangler.jsonc`, deploy in sandbox mode, and connect `payments.rivalpraxis.com` to the Worker.
 5. Ask REDUNIQ to validate the sandbox flow. Only after acceptance, change `REDUNIQ_ENVIRONMENT` to `production` and add production credentials as secrets.
 
+The public payment switch in `payment-config.js` must remain `enabled: false` until the Worker hostname resolves, TLS is valid, sandbox testing is accepted and production credentials are installed. If the acquiring agreement names Getnet rather than REDUNIQ, obtain the exact Getnet product and API specification before deployment; Getnet credentials are not interchangeable with REDUNIQ credentials.
+
 ## Approved quotation record
 
 Before sending a payment link, staff must create one KV record. The key is `quote:RP-2026-00124`. The value is JSON like this:
@@ -62,3 +64,5 @@ All money values are integer cents. The total must equal subtotal plus tax plus 
 - Verify every return and notification using `getResult`.
 - Never mark an order paid from a browser redirect alone.
 - Retain transaction and invoice records according to accounting and legal requirements.
+- Reconcile every captured transaction against the provider back office before fulfilment.
+- Never commit `.dev.vars`, API credentials, merchant secrets or live quotation records.
