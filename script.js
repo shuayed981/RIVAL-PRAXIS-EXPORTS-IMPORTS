@@ -81,10 +81,21 @@ document.addEventListener("DOMContentLoaded", () => {
     updateHeader();
     window.addEventListener("scroll", updateHeader, { passive: true });
     if (!button || !navigation) return;
-    const closeMenu = () => navigation.classList.remove("active");
-    button.addEventListener("click", () => navigation.classList.toggle("active"));
+    const setMenu = (open) => {
+        navigation.classList.toggle("active", open);
+        button.setAttribute("aria-expanded", String(open));
+    };
+    button.setAttribute("aria-expanded", "false");
+    const closeMenu = () => setMenu(false);
+    button.addEventListener("click", () => setMenu(!navigation.classList.contains("active")));
     navigation.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMenu));
     document.addEventListener("click", (event) => {
         if (navigation.classList.contains("active") && !navigation.contains(event.target) && !button.contains(event.target)) closeMenu();
+    });
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            closeMenu();
+            button.focus();
+        }
     });
 });
