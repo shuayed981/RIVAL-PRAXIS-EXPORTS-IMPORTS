@@ -35,6 +35,11 @@ a{color:var(--primary);font-weight:600}
 main a{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}
 ul{padding-left:22px;margin:18px 0}
 .notice{background:#fff8e8;border-left:5px solid var(--accent);padding:20px;border-radius:12px;margin:25px 0}
+.merchant-record{display:grid;margin:20px 0;border-top:1px solid var(--border)}
+.merchant-record div{display:grid;grid-template-columns:minmax(180px,.75fr) minmax(0,1.25fr);gap:20px;padding:14px 0;border-bottom:1px solid var(--border)}
+.merchant-record dt{font-weight:700;color:#2b2019}
+.merchant-record dd{margin:0;color:#555;overflow-wrap:anywhere}
+ol{padding-left:22px;margin:18px 0}
 section,.content,.policy{background:var(--card);padding:40px;border-radius:0;box-shadow:var(--shadow);margin:40px auto}
 table{width:100%;border-collapse:collapse;margin:25px 0}
 th,td{padding:14px;border:1px solid var(--border)}
@@ -52,6 +57,7 @@ section,.content,.policy{padding:25px}
 body{padding-top:0}
 header{display:none}
 main{margin-top:24px}
+.merchant-record div{grid-template-columns:1fr;gap:3px}
 }
 @media(min-width:501px){
 body{padding-top:84px}

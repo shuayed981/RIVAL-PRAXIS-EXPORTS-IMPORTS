@@ -1,6 +1,8 @@
 (() => {
   "use strict";
-  const API_BASE = "https://payments.rivalpraxis.com/api";
+  const config = window.RIVAL_PAYMENT_CONFIG || {};
+  const API_BASE = config.apiBase || "";
+  const PAYMENT_SERVICE_ENABLED = config.enabled === true && /^https:\/\//.test(API_BASE);
   const lookupForm = document.getElementById("quote-lookup-form");
   const lookupMessage = document.getElementById("lookup-message");
   const summary = document.getElementById("quote-summary");
@@ -15,6 +17,10 @@
 
   lookupForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (!PAYMENT_SERVICE_ENABLED) {
+      lookupMessage.textContent = "Secure online payment activation is in progress. Contact payment support to pay an approved quotation.";
+      return;
+    }
     const button = lookupForm.querySelector("button[type=submit]");
     button.dataset.label ||= button.textContent;
     lookupMessage.textContent = "";

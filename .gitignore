@@ -1,0 +1,9 @@
+# Local payment-provider secrets and development files
+.dev.vars
+reduniq-worker/.dev.vars
+node_modules/
+.wrangler/
+
+# Operating-system files
+Thumbs.db
+.DS_Store
