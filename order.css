@@ -28,7 +28,6 @@
 .order-actions { display: grid; gap: 10px; margin-top: 22px; }
 .order-actions .btn { width: 100%; border: 0; cursor: pointer; text-align: center; }
 .secondary-action { background: #eee8e2; color: #271e18; }
-.trial-action { background: linear-gradient(135deg,#8c1d40,#5f102b); color: #fff; }
 .order-message { min-height: 24px; margin-top: 13px; color: #8c1d40; font-size: 13px; }
 .payment-ready { margin-top: 18px; padding: 15px; border-left: 3px solid var(--gold); background: #fff8df; color: #53483d; font-size: 12px; line-height: 1.6; }
 @media (max-width: 900px) { .order-shell { grid-template-columns: 1fr; } .order-summary { position: static; } }

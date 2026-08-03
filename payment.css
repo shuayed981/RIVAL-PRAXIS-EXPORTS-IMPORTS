@@ -7,7 +7,6 @@
 .activation-notice a{color:var(--brand);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .payment-shell{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);max-width:1200px;margin:auto;background:var(--surface);box-shadow:var(--shadow)}
 .payment-form-card{padding:clamp(28px,5vw,62px)}
-.payment-form-card [hidden]{display:none!important}
 .payment-assurance{padding:clamp(28px,4vw,52px);background:#211a16;color:#fff}
 .payment-assurance h2{margin:8px 0 24px;font-family:"Cormorant Garamond",Georgia,serif;font-size:38px;line-height:1.05}
 .payment-assurance ul{display:grid;gap:18px;margin:0;padding:0;list-style:none}
@@ -31,12 +30,6 @@
 .quote-summary dt,.status-card dt{color:var(--muted);font-size:13px}
 .quote-summary dd,.status-card dd{margin:0;font-weight:600;text-align:right}
 .quote-summary .summary-total{padding:18px 0;border-bottom:0;font-size:20px}
-.demo-payment-notice{display:grid;gap:5px;margin-bottom:24px;padding:16px;border:1px solid #caa96c;background:#fff8e8;color:#4b3827;font-size:13px;line-height:1.5}
-.demo-order-details{display:grid;gap:18px;margin:22px 0;padding:20px;background:#f8f5f1}
-.demo-order-details h3{margin:0;color:var(--brand);font-size:18px}
-.demo-company-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:13px}
-.demo-company-grid div{display:grid;gap:2px}.demo-company-grid strong{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
-.demo-items{width:100%;border-collapse:collapse;font-size:12px}.demo-items th,.demo-items td{padding:9px 6px;border-bottom:1px solid #e2d9d0;text-align:left}.demo-items th:last-child,.demo-items td:last-child{text-align:right}
 .payment-consent{display:flex;margin-top:18px;align-items:flex-start;gap:10px;font-size:12px!important;font-weight:400!important;line-height:1.6}
 .payment-consent input{margin-top:4px;accent-color:var(--brand)}
 .payment-consent a,.text-link{color:var(--brand);font-weight:600;text-decoration:underline;text-underline-offset:3px}
@@ -50,4 +43,4 @@
 .status-card dl{margin-top:28px;text-align:left}
 .status-actions{display:flex;margin-top:32px;align-items:center;justify-content:center;flex-wrap:wrap;gap:20px}
 @media(max-width:850px){.payment-shell{grid-template-columns:1fr}.payment-assurance{order:-1}.payment-form-card form{grid-template-columns:1fr}.payment-main{padding-top:48px}}
-@media(max-width:500px){.payment-main{padding:34px 14px 60px}.payment-intro{margin-bottom:28px}.payment-form-card,.payment-assurance{padding:28px 20px}.quote-summary dl div,.status-card dl div{align-items:flex-start;flex-direction:column;gap:4px}.quote-summary dd,.status-card dd{text-align:left}.status-actions .btn{width:100%}.demo-company-grid{grid-template-columns:1fr}.demo-items{font-size:11px}.demo-items th:nth-child(2),.demo-items td:nth-child(2){display:none}}
+@media(max-width:500px){.payment-main{padding:34px 14px 60px}.payment-intro{margin-bottom:28px}.payment-form-card,.payment-assurance{padding:28px 20px}.quote-summary dl div,.status-card dl div{align-items:flex-start;flex-direction:column;gap:4px}.quote-summary dd,.status-card dd{text-align:left}.status-actions .btn{width:100%}}
