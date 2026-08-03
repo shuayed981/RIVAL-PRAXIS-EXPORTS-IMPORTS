@@ -1,3 +1,5 @@
+import { ensureInvoiceForPayment, invoicePdf } from "./invoice-service.js";
+
 const gatewayEndpoint = (env) => {
   const version = env.REDUNIQ_API_VERSION === "6.0" ? "6.0" : "7.0";
   const host = env.REDUNIQ_ENVIRONMENT === "production" ? "pagamentos.reduniq.pt" : "pagamentos.sandbox.reduniq.pt";
@@ -145,16 +147,26 @@ async function verifyToken(env, token) {
   // REDUNIQ specifies transaction.status as the authoritative success field.
   // An exact server-side amount match remains mandatory before fulfilment.
   const paid = Number(result?.transaction?.status) === 4 && Number.isSafeInteger(gatewayAmount) && gatewayAmount === session.total;
+  let invoice = null;
   if (paid) {
     const key = quoteKey(session.quoteReference);
-    const quote = await env.QUOTES.get(key, "json");
+    let quote = await env.QUOTES.get(key, "json");
     if (quote && quote.paymentStatus !== "paid") {
       const transactionId = normalize(result?.transaction?.id, 50);
-      await env.QUOTES.put(key, JSON.stringify({ ...quote, paymentStatus: "paid", paidAt: new Date().toISOString(), transactionId }));
+      quote = { ...quote, paymentStatus: "paid", paidAt: new Date().toISOString(), transactionId };
+      await env.QUOTES.put(key, JSON.stringify(quote));
       await audit(env, session.quoteReference, "payment_confirmed", { transactionId, total: session.total, currency: session.currency, resultCode });
     }
+    if (quote) {
+      try {
+        invoice = await ensureInvoiceForPayment(env, { ...quote, quoteReference: session.quoteReference }, { transactionId: normalize(result?.transaction?.id, 80), token: normalizedToken });
+      } catch (error) {
+        console.error("Invoice creation failed", error);
+        invoice = { status: "configuration_required" };
+      }
+    }
   }
-  return { paid, session, result };
+  return { paid, session, result, invoice };
 }
 
 async function paymentResult(request, env, origin) {
@@ -163,7 +175,21 @@ async function paymentResult(request, env, origin) {
   const verified = await verifyToken(env, input.token);
   if (!verified) return json({ message: "The payment session was not found." }, 404, origin);
   if (!verified.paid) return json({ status: "not_paid", message: "REDUNIQ has not confirmed this payment. Do not submit another payment until support checks the transaction." }, 409, origin);
-  return json({ status: "paid", quoteReference: verified.session.quoteReference, transactionId: normalize(verified.result?.transaction?.id, 50), total: verified.session.total, currency: verified.session.currency }, 200, origin);
+  return json({ status: "paid", quoteReference: verified.session.quoteReference, transactionId: normalize(verified.result?.transaction?.id, 50), total: verified.session.total, currency: verified.session.currency, invoice: verified.invoice }, 200, origin);
+}
+
+async function downloadInvoice(request, env, origin) {
+  const input = await bodyOf(request);
+  const stored = await invoicePdf(env, normalize(input.token, 80));
+  if (!stored?.object) return json({ message: "The invoice is not available yet." }, 404, origin);
+  const headers = new Headers({
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename="${normalize(stored.row.official_invoice_number, 60).replace(/[^A-Za-z0-9._-]/g, "_")}.pdf"`,
+    "Cache-Control": "no-store",
+    "Access-Control-Allow-Origin": origin,
+    "Vary": "Origin"
+  });
+  return new Response(stored.object.body, { headers });
 }
 
 async function notification(request, env, origin) {
@@ -188,6 +214,7 @@ export default {
       if (path === "/api/payment/init") return initPayment(request, env, origin);
       if (path === "/api/payment/result") return paymentResult(request, env, origin);
       if (path === "/api/payment/notification") return notification(request, env, origin);
+      if (path === "/api/invoice/pdf") return downloadInvoice(request, env, origin);
       return json({ message: "Not found" }, 404, origin);
     } catch (error) {
       console.error(error);

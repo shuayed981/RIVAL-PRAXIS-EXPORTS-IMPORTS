@@ -12,9 +12,21 @@
     "API_ORIGIN": "https://payments.rivalpraxis.com",
     "REDUNIQ_ENVIRONMENT": "sandbox",
     "REDUNIQ_API_VERSION": "7.0",
-    "REDUNIQ_PAYMENT_SOLUTION": ""
+    "REDUNIQ_PAYMENT_SOLUTION": "",
+    "INVOICE_ISSUANCE_ENABLED": "false",
+    "INVOICE_PROVIDER": "disabled",
+    "INVOICE_REQUEST_SERIES": "RP-PAY",
+    "INVOICE_SELLER_NAME": "RIVAL PRAXIS UNIPESSOAL LDA",
+    "INVOICE_SELLER_TIN": "519497074",
+    "INVOICE_SELLER_EMAIL": "rivalpraxisunipessoallda@gmail.com"
   },
   "kv_namespaces": [
     { "binding": "QUOTES", "id": "REPLACE_WITH_KV_NAMESPACE_ID", "preview_id": "REPLACE_WITH_PREVIEW_KV_NAMESPACE_ID" }
+  ],
+  "d1_databases": [
+    { "binding": "INVOICES_DB", "database_name": "rival-praxis-invoices", "database_id": "REPLACE_WITH_D1_DATABASE_ID" }
+  ],
+  "r2_buckets": [
+    { "binding": "INVOICE_PDFS", "bucket_name": "rival-praxis-invoices" }
   ]
 }
