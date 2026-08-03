@@ -11,7 +11,7 @@ const sizes = {
 
 const productGroups = {
     women: {
-        code: "WM", category: "Women's Fashion", imageFolder: "women", imageSuffix: "w",
+        code: "WM", imageFolder: "women", imageSuffix: "w",
         names: [
             "Azure Dobby Midi Dress", "Sienna Pleated Day Dress", "Noir Botanical Blouse Set", "Ivory Riviera Wrap Dress",
             "Celeste Linen Co-ord", "Marigold Junior Occasion Dress", "Rosewood Satin Blouse", "Ivory Maroon Embroidered Suit",
@@ -19,11 +19,18 @@ const productGroups = {
             "Sage Cotton Poplin Set", "Midnight Velvet Occasion Dress", "Champagne Draped Blouse", "Coral Riviera Maxi Dress",
             "Emerald Brocade Jacket Set", "Sandstone Minimalist Co-ord", "Verona Woven Cape", "Cobalt Pleated Column Dress"
         ],
+        categories: [
+            "Women's Midi Dresses", "Women's Day Dresses", "Women's Coordinates", "Women's Wrap Dresses",
+            "Women's Linen Sets", "Girls' Occasion Wear", "Women's Satin Blouses", "Women's Embroidered Suits",
+            "Women's Resort Dresses", "Women's Tailored Jumpsuits", "Women's Evening Dresses", "Women's Belted Dresses",
+            "Women's Cotton Sets", "Women's Velvet Dresses", "Women's Draped Blouses", "Women's Maxi Dresses",
+            "Women's Brocade Sets", "Women's Minimalist Sets", "Women's Woven Capes", "Women's Pleated Dresses"
+        ],
         prices: [69.90,74.90,79.90,64.90,72.90,76.90,68.90,82.90,71.90,77.90,84.90,73.90,66.90,81.90,75.90,78.90,86.90,70.90,83.90,79.90],
         sizes: [sizes.standardXL,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.youth,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.standardXL,sizes.xs,sizes.standard,sizes.standardXL,sizes.xs,"One Size",sizes.standardXL]
     },
     men: {
-        code: "MN", category: "Men's Fashion", imageFolder: "men", imageSuffix: "m",
+        code: "MN", imageFolder: "men", imageSuffix: "m",
         names: [
             "Navy Riviera Linen Shirt", "Stone Harbour Polo", "Charcoal Executive Overshirt", "Espresso Signature Suit",
             "Atlantic Textured Knit Polo", "Sand Tailored Chino", "Midnight Double-Breasted Suit", "Olive Resort Camp Shirt",
@@ -31,17 +38,31 @@ const productGroups = {
             "Slate Weekend Bomber", "Indigo Mandarin-Collar Shirt", "Urban Linen Layered Set", "Camel Heritage Overshirt",
             "Marine Pique Polo", "Onyx Travel Co-ord", "Pearl Grey Ceremony Suit", "Mediterranean Linen Suit"
         ],
+        categories: [
+            "Men's Linen Shirts", "Men's Polo Shirts", "Men's Overshirts", "Men's Business Suits",
+            "Men's Knit Polos", "Men's Tailored Trousers", "Men's Double-Breasted Suits", "Men's Resort Shirts",
+            "Men's Formal Waistcoats", "Men's Tailored Blazers", "Men's Merino Polos", "Men's Coastal Shirts",
+            "Men's Casual Jackets", "Men's Collarless Shirts", "Men's Linen Sets", "Men's Heritage Overshirts",
+            "Men's Pique Polos", "Men's Travel Sets", "Men's Ceremony Suits", "Men's Linen Suits"
+        ],
         prices: [89.90,94.90,99.90,84.90,92.90,96.90,104.90,87.90,98.90,91.90,106.90,93.90,88.90,101.90,95.90,103.90,90.90,97.90,108.90,99.90],
         sizes: [sizes.standardXL,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.standardXL,sizes.waist,sizes.euXL,sizes.menXL,sizes.eu,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.standardXL,sizes.menXL,sizes.waist,sizes.menXL,sizes.menXL,sizes.standardXL,sizes.eu,sizes.euXL]
     },
     accessories: {
-        code: "AC", category: "Accessories", imageFolder: "accessories", imageSuffix: "a",
+        code: "AC", imageFolder: "accessories", imageSuffix: "a",
         names: [
             "Canvas Equestrian Travel Bag", "Monogram Weekend Holdall", "Coastal Stripe Tote Set", "Saffiano Document Case",
             "Heritage Leather Briefcase", "Riviera Woven Sun Hat", "Noir Executive Card Holder", "Porto Structured Handbag",
             "Cognac Bifold Wallet", "Marina Braided Belt", "Aurelia Classic Timepiece", "Linen Resort Scarf",
             "Oxford Leather Key Case", "Lisbon City Crossbody", "Évora Weekender Set", "Atlantic Canvas Cap",
             "Verona Chain Shoulder Bag", "Minimalist Travel Organiser", "Regent Automatic Watch", "Algarve Woven Tote"
+        ],
+        categories: [
+            "Travel Bags", "Weekend Holdalls", "Tote Bag Sets", "Document Cases",
+            "Leather Briefcases", "Woven Hats", "Card Holders", "Structured Handbags",
+            "Leather Wallets", "Braided Belts", "Classic Watches", "Resort Scarves",
+            "Leather Key Cases", "Crossbody Bags", "Weekender Sets", "Canvas Caps",
+            "Shoulder Bags", "Travel Organisers", "Automatic Watches", "Woven Totes"
         ],
         prices: [24.90,29.90,39.90,44.90,49.90,27.90,34.90,41.90,32.90,46.90,52.90,36.90,28.90,43.90,54.90,31.90,47.90,38.90,56.90,42.90],
         sizes: Array(20).fill("One Size")
@@ -56,7 +77,7 @@ const RIVAL_PRODUCTS = Object.freeze(Object.entries(productGroups).flatMap(([typ
     group.prices.map((price, index) => Object.freeze({
         sku: `RP-${group.code}-${String(index + 1).padStart(4, "0")}`,
         legacyReference: `${type.toUpperCase()}-${String(index + 1).padStart(2, "0")}`,
-        type, category: group.category, name: group.names[index],
+        type, category: group.categories[index], name: group.names[index],
         image: `images/${group.imageFolder}/${index + 1}${group.imageSuffix}.jpg`,
         sizes: group.sizes[index] || "One Size", price, moq: productMoq(type, index)
     }))
