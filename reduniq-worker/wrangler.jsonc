@@ -18,7 +18,10 @@
     "INVOICE_REQUEST_SERIES": "RP-PAY",
     "INVOICE_SELLER_NAME": "RIVAL PRAXIS UNIPESSOAL LDA",
     "INVOICE_SELLER_TIN": "519497074",
-    "INVOICE_SELLER_EMAIL": "rivalpraxisunipessoallda@gmail.com"
+    "INVOICE_SELLER_EMAIL": "rivalpraxisunipessoallda@gmail.com",
+    "EMAIL_PROVIDER": "disabled",
+    "EMAIL_FROM": "RIVAL PRAXIS <orders@rivalpraxis.com>",
+    "MERCHANT_ORDER_EMAIL": "rivalpraxisunipessoallda@gmail.com"
   },
   "kv_namespaces": [
     { "binding": "QUOTES", "id": "REPLACE_WITH_KV_NAMESPACE_ID", "preview_id": "REPLACE_WITH_PREVIEW_KV_NAMESPACE_ID" }

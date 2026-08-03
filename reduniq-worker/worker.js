@@ -1,4 +1,6 @@
 import { ensureInvoiceForPayment, invoicePdf } from "./invoice-service.js";
+import { createQuoteRequest, publicQuoteByToken, acceptQuote, adminList, adminCreateQuote, adminUpdateOrder, markOrderPayment, markOrderPaymentPending } from "./commerce-service.js";
+import { sendEmail, merchantEmail } from "./email-service.js";
 
 const gatewayEndpoint = (env) => {
   const version = env.REDUNIQ_API_VERSION === "6.0" ? "6.0" : "7.0";
@@ -39,7 +41,19 @@ function allowedOrigin(request, env) {
 
 async function bodyOf(request) {
   if (!(request.headers.get("Content-Type") || "").includes("application/json")) throw new Error("JSON_REQUIRED");
+  if (Number(request.headers.get("Content-Length") || 0) > 262144) throw new Error("REQUEST_TOO_LARGE");
   return request.json();
+}
+
+function isAdmin(request, env) {
+  const expected = String(env.ADMIN_API_TOKEN || ""); const supplied = String(request.headers.get("Authorization") || "");
+  return expected.length >= 32 && supplied === `Bearer ${expected}`;
+}
+
+function bytesToBase64(buffer) {
+  const bytes = new Uint8Array(buffer); let binary = "";
+  for (let offset = 0; offset < bytes.length; offset += 32768) binary += String.fromCharCode(...bytes.subarray(offset, offset + 32768));
+  return btoa(binary);
 }
 
 async function enforceRateLimit(request, env, action) {
@@ -133,6 +147,7 @@ async function initPayment(request, env, origin) {
   const createdAt = new Date().toISOString();
   await env.QUOTES.put(tokenKey(result.token), JSON.stringify({ quoteReference: quote.quoteReference, total: quote.total, currency: quote.currency || "EUR", redirectUrl: result.redirectUrl, createdAt }), { expirationTtl: SESSION_TTL_SECONDS });
   await env.QUOTES.put(quoteKey(quote.quoteReference), JSON.stringify({ ...quote, paymentStatus: "pending", paymentToken: result.token, paymentTokenCreatedAt: createdAt }));
+  await markOrderPaymentPending(env, quote.quoteReference);
   await audit(env, quote.quoteReference, "payment_initialized", { token: result.token });
   return json({ token: result.token, redirectUrl: result.redirectUrl }, 200, origin);
 }
@@ -160,9 +175,22 @@ async function verifyToken(env, token) {
     if (quote) {
       try {
         invoice = await ensureInvoiceForPayment(env, { ...quote, quoteReference: session.quoteReference }, { transactionId: normalize(result?.transaction?.id, 80), token: normalizedToken });
+        if (invoice?.status === "issued" && invoice.downloadAvailable) {
+          const storedInvoice = await invoicePdf(env, normalizedToken);
+          if (storedInvoice?.object) {
+            const filename = `${normalize(invoice.invoiceNumber, 60).replace(/[^A-Za-z0-9._-]/g, "_")}.pdf`;
+            await sendEmail(env, { key: `invoice-issued-${normalize(result?.transaction?.id, 80)}`, to: [quote.email, merchantEmail(env)], subject: `Invoice ${invoice.invoiceNumber} - RIVAL PRAXIS`, heading: "Your invoice", body: `<p>Payment is confirmed and invoice <b>${invoice.invoiceNumber}</b> is attached for your accounting records.</p><p>ATCUD: <b>${invoice.atcud}</b></p>`, attachments: [{ filename, content: bytesToBase64(await storedInvoice.object.arrayBuffer()) }] });
+          }
+        }
       } catch (error) {
         console.error("Invoice creation failed", error);
         invoice = { status: "configuration_required" };
+      }
+      const transactionId = normalize(result?.transaction?.id, 80);
+      const order = await markOrderPayment(env, session.quoteReference, transactionId);
+      if (order) {
+        await sendEmail(env, { key: `payment-customer-${transactionId}`, to: order.customer_email, subject: `Payment confirmed - ${order.order_reference}`, heading: "Payment confirmed", body: `<p>We securely confirmed payment for order <b>${order.order_reference}</b>.</p><p>Transaction: <b>${transactionId}</b></p>` });
+        await sendEmail(env, { key: `payment-merchant-${transactionId}`, to: merchantEmail(env), subject: `Payment received - ${order.order_reference}`, heading: "Payment received", body: `<p>Order <b>${order.order_reference}</b> has been paid.</p><p>Transaction: <b>${transactionId}</b></p>` });
       }
     }
   }
@@ -174,7 +202,10 @@ async function paymentResult(request, env, origin) {
   const input = await bodyOf(request);
   const verified = await verifyToken(env, input.token);
   if (!verified) return json({ message: "The payment session was not found." }, 404, origin);
-  if (!verified.paid) return json({ status: "not_paid", message: "REDUNIQ has not confirmed this payment. Do not submit another payment until support checks the transaction." }, 409, origin);
+  if (!verified.paid) {
+    await audit(env, verified.session.quoteReference, "payment_not_confirmed", { transactionStatus: Number(verified.result?.transaction?.status) || null, resultCode: normalize(verified.result?.result?.code, 30) });
+    return json({ status: "not_paid", message: "REDUNIQ has not confirmed this payment. Do not submit another payment until support checks the transaction." }, 409, origin);
+  }
   return json({ status: "paid", quoteReference: verified.session.quoteReference, transactionId: normalize(verified.result?.transaction?.id, 50), total: verified.session.total, currency: verified.session.currency, invoice: verified.invoice }, 200, origin);
 }
 
@@ -202,6 +233,29 @@ async function notification(request, env, origin) {
   return json({ received: true, paid: Boolean(verified?.paid) }, 200, origin);
 }
 
+async function quoteRequest(request, env, origin) {
+  if (!(await enforceRateLimit(request, env, "quote-request"))) return json({ message: "Too many requests. Please wait before trying again." }, 429, origin);
+  return json(await createQuoteRequest(env, await bodyOf(request)), 201, origin);
+}
+
+async function quoteView(request, env, origin) {
+  const result = await publicQuoteByToken(env, (await bodyOf(request)).token);
+  return result ? json(result, 200, origin) : json({ message: "The quotation could not be found." }, 404, origin);
+}
+
+async function quoteAccept(request, env, origin) {
+  return json(await acceptQuote(env, (await bodyOf(request)).token), 200, origin);
+}
+
+async function adminEndpoint(request, env, origin, action) {
+  if (!isAdmin(request, env)) return json({ message: "Administrator authorization required." }, 401, origin);
+  if (action === "list") return json(await adminList(env), 200, origin);
+  const input = await bodyOf(request);
+  if (action === "quote") return json(await adminCreateQuote(env, input), 201, origin);
+  if (action === "order") return json(await adminUpdateOrder(env, input), 200, origin);
+  return json({ message: "Not found" }, 404, origin);
+}
+
 export default {
   async fetch(request, env) {
     const origin = allowedOrigin(request, env);
@@ -211,10 +265,16 @@ export default {
     const path = new URL(request.url).pathname;
     try {
       if (path === "/api/quote/lookup") return lookupQuote(request, env, origin);
+      if (path === "/api/quote/request") return quoteRequest(request, env, origin);
+      if (path === "/api/quote/view") return quoteView(request, env, origin);
+      if (path === "/api/quote/accept") return quoteAccept(request, env, origin);
       if (path === "/api/payment/init") return initPayment(request, env, origin);
       if (path === "/api/payment/result") return paymentResult(request, env, origin);
       if (path === "/api/payment/notification") return notification(request, env, origin);
       if (path === "/api/invoice/pdf") return downloadInvoice(request, env, origin);
+      if (path === "/api/admin/list") return adminEndpoint(request, env, origin, "list");
+      if (path === "/api/admin/quote") return adminEndpoint(request, env, origin, "quote");
+      if (path === "/api/admin/order") return adminEndpoint(request, env, origin, "order");
       return json({ message: "Not found" }, 404, origin);
     } catch (error) {
       console.error(error);

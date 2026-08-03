@@ -20,6 +20,12 @@ The public payment switch in `payment-config.js` must remain `enabled: false` un
 
 Confirmed payments are connected to the invoicing service, but fiscal issuance defaults to disabled. Read `../INVOICING.md` before activation. Production requires an AT-certified invoicing provider, its encrypted API key, an approved fiscal series, ATCUD/QR support, private PDF storage and accountant sign-off. The Worker never treats its internal request number as the official fiscal invoice number.
 
+## Complete commerce workflow
+
+`commerce-schema.sql` and `commerce-service.js` add persistent quote requests, private customer acceptance links, order creation and status history. `/admin.html` is the protected staff Commerce Desk. Its API requires the encrypted `ADMIN_API_TOKEN`; the token is never placed in website source.
+
+Transactional messages use Resend when `EMAIL_PROVIDER=resend` and the encrypted `RESEND_API_KEY` is installed. The system emails request acknowledgements, new-request alerts, confirmed quotations, acceptance/payment confirmations, invoice attachments and fulfilment updates. Idempotency records prevent successful messages from being sent twice.
+
 ## Approved quotation record
 
 Before sending a payment link, staff must create one KV record. The key is `quote:RP-2026-00124`. The value is JSON like this:

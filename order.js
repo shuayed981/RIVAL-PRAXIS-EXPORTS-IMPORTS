@@ -6,6 +6,7 @@
   const submitButton = document.getElementById("submit-order");
   const downloadButton = document.getElementById("download-order");
   const recipient = "rivalpraxisunipessoallda@gmail.com";
+  const paymentConfig = window.RIVAL_PAYMENT_CONFIG || {};
   let currentSubtotal = 0;
 
   const safe = value => String(value || "").trim();
@@ -60,11 +61,21 @@
     event.preventDefault(); message.textContent = "";
     if (!form.reportValidity()) return;
     if (!validLines().length) { message.textContent = "Add at least one product before requesting a quotation."; return; }
-    const order = buildOrder(requestReference());
-    sessionStorage.setItem("rivalPraxisLastOrder", JSON.stringify(order)); download(order);
-    const subject = `Wholesale Order Request - ${order.reference} - ${safe(order.customer.company)}`;
-    window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(orderText(order))}`;
-    message.textContent = `Order ${order.reference} is ready. A copy was downloaded and your email application is opening so you can send it.`;
+    const order = buildOrder(requestReference()); submitButton.disabled = true; submitButton.textContent = "Sending request…";
+    if (paymentConfig.commerceEnabled === true && /^https:\/\//.test(paymentConfig.apiBase || "")) {
+      const payload = { customer: order.customer, notes: order.customer.notes, items: order.items.map(item => ({ sku: item.reference, name: item.category, size: item.size, quantity: item.quantity, unitPrice: Math.round(item.unitPrice * 100), lineTotal: Math.round(item.lineTotal * 100) })) };
+      fetch(`${paymentConfig.apiBase}/quote/request`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
+        .then(async response => { const data = await response.json(); if (!response.ok) throw new Error(data.message || "Request failed."); return data; })
+        .then(data => { order.reference = data.requestReference; sessionStorage.setItem("rivalPraxisLastOrder", JSON.stringify(order)); download(order); RIVAL_CART.write([]); renderCart(); message.textContent = `Request ${data.requestReference} was submitted. A confirmation email is on its way.`; })
+        .catch(error => { message.textContent = error.message === "Failed to fetch" ? "The secure request service is temporarily unavailable. Please try again shortly." : error.message; })
+        .finally(() => { submitButton.disabled = false; submitButton.textContent = "Request Confirmed Quote"; });
+    } else {
+      sessionStorage.setItem("rivalPraxisLastOrder", JSON.stringify(order)); download(order);
+      const subject = `Wholesale Order Request - ${order.reference} - ${safe(order.customer.company)}`;
+      window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(orderText(order))}`;
+      message.textContent = `Order ${order.reference} is ready. A copy was downloaded and your email application is opening so you can send it.`;
+      submitButton.disabled = false; submitButton.textContent = "Request Confirmed Quote";
+    }
   });
   downloadButton.addEventListener("click", () => { if (!validLines().length) return; download(buildOrder(requestReference())); message.textContent = "Your order copy has been downloaded."; });
   window.addEventListener("rival-cart-change", renderCart); renderCart();

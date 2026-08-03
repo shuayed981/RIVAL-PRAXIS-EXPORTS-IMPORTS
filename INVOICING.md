@@ -13,6 +13,7 @@ The internal `RP-PAY/YYYY-000001` number is a processing reference, not the Port
 3. Communicate the fiscal series to AT and configure its validation code so the provider can issue the ATCUD.
 4. Confirm that the provider generates the AT-compliant QR code, supports SAF-T/e-Fatura communication, preserves issued documents and handles credit notes.
 5. Create the Cloudflare D1 database and R2 bucket, then apply `reduniq-worker/invoice-schema.sql`.
+   Apply `reduniq-worker/commerce-schema.sql` to the same D1 database.
 6. Configure the certified API endpoint and store `CERTIFIED_INVOICE_API_KEY` as a Worker secret. Never commit it.
 7. Test duplicate notifications, failed callbacks, refunds and credit notes in sandbox.
 8. Only after acceptance, set `INVOICE_PROVIDER=certified-api` and `INVOICE_ISSUANCE_ENABLED=true`.
