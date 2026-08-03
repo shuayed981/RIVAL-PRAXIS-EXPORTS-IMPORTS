@@ -128,6 +128,13 @@ window.RIVAL_CART = Object.freeze({ read: readCart, write: writeCart, add: addTo
 function loadProducts(type) {
     const gallery = document.getElementById("gallery");
     const products = RIVAL_PRODUCTS.filter(product => product.type === type);
+    if (type === "women" || type === "men") {
+        products.sort((first, second) => {
+            const firstNumber = Number(first.sku.slice(-4));
+            const secondNumber = Number(second.sku.slice(-4));
+            return (firstNumber >= 21 ? 0 : 1) - (secondNumber >= 21 ? 0 : 1) || firstNumber - secondNumber;
+        });
+    }
     if (!gallery || !products.length) return;
     gallery.replaceChildren(...products.map(product => {
         const card = document.createElement("article");
