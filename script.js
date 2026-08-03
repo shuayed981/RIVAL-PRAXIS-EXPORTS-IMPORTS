@@ -119,6 +119,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const cartLink = document.createElement("a"); cartLink.href = "order.html"; cartLink.className = "cart-link"; cartLink.innerHTML = 'Order Cart <span class="cart-count" aria-label="items in cart">0</span>'; navigation.append(cartLink);
     }
     updateCartBadge();
+    document.querySelectorAll(".featured-add[data-sku]").forEach(featuredButton => featuredButton.addEventListener("click", () => {
+        const product = getProduct(featuredButton.dataset.sku); const size = featuredButton.closest(".shop-product-info")?.querySelector(".featured-size select")?.value;
+        if (!product || !size) return;
+        addToCart(product.sku, size, product.moq); featuredButton.classList.add("is-added"); featuredButton.textContent = "Added to Order";
+        setTimeout(() => { featuredButton.classList.remove("is-added"); featuredButton.textContent = "Add to Order"; }, 1400);
+    }));
     if (!button || !navigation) return;
     const setMenu = open => { navigation.classList.toggle("active", open); button.setAttribute("aria-expanded", String(open)); };
     button.setAttribute("aria-expanded", "false"); const closeMenu = () => setMenu(false);
