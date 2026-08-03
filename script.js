@@ -6,31 +6,32 @@ const sizes = {
     standard: ["S", "M", "L"].join(dot), standardXL: ["S", "M", "L", "XL"].join(dot),
     youth: ["4Y", "6Y", "8Y", "10Y"].join(dot), xs: ["XS", "S", "M", "L"].join(dot),
     menXL: ["M", "L", "XL"].join(dot), waist: ["30", "32", "34", "36"].join(dot),
-    eu: ["48", "50", "52"].join(dot), euXL: ["48", "50", "52", "54"].join(dot)
+    eu: ["48", "50", "52"].join(dot), euXL: ["48", "50", "52", "54"].join(dot),
+    shoes: ["EU 36", "EU 37", "EU 38", "EU 39", "EU 40"].join(dot)
 };
 
 const productGroups = {
     women: {
         code: "WM", imageFolder: "women", imageSuffix: "w",
         names: [
-            "Azure Dobby Midi Dress", "Sienna Pleated Day Dress", "Noir Botanical Blouse Set", "Ivory Riviera Wrap Dress",
-            "Celeste Linen Co-ord", "Marigold Junior Occasion Dress", "Rosewood Satin Blouse", "Ivory Maroon Embroidered Suit",
-            "Lagoon Resort Shirt Dress", "Bordeaux Tailored Jumpsuit", "Pearl Jacquard Evening Dress", "Terracotta Belted Midi Dress",
-            "Sage Cotton Poplin Set", "Midnight Velvet Occasion Dress", "Champagne Draped Blouse", "Coral Riviera Maxi Dress",
-            "Emerald Brocade Jacket Set", "Sandstone Minimalist Co-ord", "Verona Woven Cape", "Cobalt Pleated Column Dress",
-            "Pearl Boucle Atelier Set", "Sapphire Satin Wrap Dress", "Terracotta Linen Tailored Set", "Emerald Pleated Halter Dress",
-            "Blush Embroidered Cotton Set", "Charcoal Pinstripe Waistcoat Set", "Ivory Organza Cocktail Dress", "Teal Belted Silk Shirt Dress",
-            "Burgundy Velvet Trouser Suit", "Sand Crochet Resort Set"
+            "Powder Blue Belted Tiered Midi Dress", "Olive Button-Front Tailored Playsuit", "Midnight Floral Satin Trouser Set", "Sand Sleeveless Draped Jumpsuit",
+            "Cobalt Porcelain Print Halter Set", "Buttercream Ruffle Blouse and Shorts Set", "Mosaic Print Puff-Sleeve Blouse", "Ivory Burgundy Embroidered Tunic Set",
+            "White Linen Shirt and Black Shorts Set", "Natural Crochet Resort Maxi Dress", "Emerald Scallop-Trim Swing Dress", "Black Strapless Tiered Maxi Dress",
+            "Black Blouse and Denim Shorts Set", "Indigo Belted Denim Jumpsuit", "Pastel Watercolour Shift Dress", "Powder Blue Crop Top and Skirt Set",
+            "White Fitted Tee and Black Shorts Set", "Sky Blue Pinstripe Shirt and Shorts Set", "Aqua Tiered Beach Maxi Dress", "Ecru Knit Tee and Shorts Set",
+            "Pearl Boucle Jacket and Midi Skirt", "Sapphire Satin Wrap Maxi Dress", "Terracotta Linen Waistcoat and Trousers", "Emerald Pleated Halter Maxi Dress",
+            "Blush Embroidered Bolero and Dress", "Charcoal Pinstripe Waistcoat and Trousers", "Ivory Chiffon Long-Sleeve Midi Dress", "Teal Belted Satin Shirt Dress",
+            "Burgundy Velvet Blazer and Trousers", "Sand Crochet Tunic and Trousers"
         ],
         categories: [
-            "Women's Midi Dresses", "Women's Day Dresses", "Women's Coordinates", "Women's Wrap Dresses",
-            "Women's Linen Sets", "Girls' Occasion Wear", "Women's Satin Blouses", "Women's Embroidered Suits",
-            "Women's Resort Dresses", "Women's Tailored Jumpsuits", "Women's Evening Dresses", "Women's Belted Dresses",
-            "Women's Cotton Sets", "Women's Velvet Dresses", "Women's Draped Blouses", "Women's Maxi Dresses",
-            "Women's Brocade Sets", "Women's Minimalist Sets", "Women's Woven Capes", "Women's Pleated Dresses",
-            "Women's Boucle Sets", "Women's Satin Dresses", "Women's Linen Tailoring", "Women's Halter Dresses",
-            "Women's Embroidered Sets", "Women's Waistcoat Sets", "Women's Cocktail Dresses", "Women's Silk Dresses",
-            "Women's Velvet Suits", "Women's Crochet Sets"
+            "Women's Tiered Dresses", "Women's Tailored Playsuits", "Women's Floral Trouser Sets", "Women's Draped Jumpsuits",
+            "Women's Printed Halter Sets", "Women's Blouse and Shorts Sets", "Women's Printed Blouses", "Women's Embroidered Tunic Sets",
+            "Women's Shirt and Shorts Sets", "Women's Crochet Maxi Dresses", "Women's Swing Dresses", "Women's Strapless Maxi Dresses",
+            "Women's Blouse and Shorts Sets", "Women's Denim Jumpsuits", "Women's Shift Dresses", "Women's Crop Top and Skirt Sets",
+            "Women's Tee and Shorts Sets", "Women's Shirt and Shorts Sets", "Women's Beach Maxi Dresses", "Women's Knit Shorts Sets",
+            "Women's Boucle Skirt Suits", "Women's Satin Maxi Dresses", "Women's Linen Waistcoat Sets", "Women's Pleated Maxi Dresses",
+            "Women's Embroidered Dress Sets", "Women's Pinstripe Waistcoat Sets", "Women's Chiffon Midi Dresses", "Women's Satin Shirt Dresses",
+            "Women's Velvet Trouser Suits", "Women's Crochet Trouser Sets"
         ],
         prices: [69.90,74.90,79.90,64.90,72.90,76.90,68.90,82.90,71.90,77.90,84.90,73.90,66.90,81.90,75.90,78.90,86.90,70.90,83.90,79.90,88.90,76.90,84.90,79.90,74.90,86.90,81.90,83.90,92.90,78.90],
         sizes: [sizes.standardXL,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.youth,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.standardXL,sizes.xs,sizes.standard,sizes.standardXL,sizes.xs,"One Size",sizes.standardXL,sizes.xs,sizes.standardXL,sizes.standardXL,sizes.standard,sizes.xs,sizes.standardXL,sizes.xs,sizes.standardXL,sizes.standardXL,sizes.standard]
@@ -38,24 +39,24 @@ const productGroups = {
     men: {
         code: "MN", imageFolder: "men", imageSuffix: "m",
         names: [
-            "Navy Riviera Linen Shirt", "Stone Harbour Polo", "Charcoal Executive Overshirt", "Espresso Signature Suit",
-            "Atlantic Textured Knit Polo", "Sand Tailored Chino", "Midnight Double-Breasted Suit", "Olive Resort Camp Shirt",
-            "Graphite Formal Waistcoat", "Modern Tailored Blazer", "Bordeaux Merino Polo", "Ivory Coastal Shirt",
-            "Slate Weekend Bomber", "Indigo Mandarin-Collar Shirt", "Urban Linen Layered Set", "Camel Heritage Overshirt",
-            "Marine Pique Polo", "Onyx Travel Co-ord", "Pearl Grey Ceremony Suit", "Mediterranean Linen Suit",
-            "Forest Brushed Cotton Overshirt", "Harbour Lightweight Bomber", "Camel Double-Breasted Blazer", "Azure Linen Resort Set",
-            "Graphite Merino Quarter-Zip", "Ecru Textured Polo Set", "Bordeaux Corduroy Overshirt", "Sterling Windowpane Three-Piece Suit",
-            "Rust Trucker Jacket", "White Band-Collar Cotton Shirt"
+            "Ivory Linen Resort Shirt and Shorts", "Midnight Botanical Resort Shirt", "Navy Polo and Sand Chinos Set", "Espresso Tailored Business Suit",
+            "Ecru Linen Shirt and Blue Shorts", "Sage Mandarin Shirt and White Trousers", "Blush Polo and Cobalt Trousers", "Ivory Stripe Short-Sleeve Shirt",
+            "Navy Breton Tee and Black Trousers", "Stone Linen Blazer and Trousers", "Navy Single-Breasted Summer Suit", "Light Wash Denim Jacket",
+            "Sand Linen Blazer and White Trousers", "White Linen Shirt and Taupe Trousers", "Ecru Cardigan and Teal Trousers", "Navy Overshirt and Shorts Set",
+            "Red Check Short-Sleeve Shirt", "Black Resort Shirt and Pale Denim", "Taupe Cuban Shirt and Pinstripe Trousers", "Citron Pocket Tee and Black Trousers",
+            "Forest Overshirt and Black Trousers", "Navy Bomber and Stone Trousers", "Camel Double-Breasted Blazer and Black Trousers", "Sky Linen Resort Shirt and Shorts",
+            "Charcoal Quarter-Zip and Grey Trousers", "Ecru Polo and Olive Trousers", "Burgundy Corduroy Overshirt", "Charcoal Windowpane Three-Piece Suit",
+            "Rust Suede Trucker Jacket", "White Band-Collar Shirt and Navy Trousers"
         ],
         categories: [
-            "Men's Linen Shirts", "Men's Polo Shirts", "Men's Overshirts", "Men's Business Suits",
-            "Men's Knit Polos", "Men's Tailored Trousers", "Men's Double-Breasted Suits", "Men's Resort Shirts",
-            "Men's Formal Waistcoats", "Men's Tailored Blazers", "Men's Merino Polos", "Men's Coastal Shirts",
-            "Men's Casual Jackets", "Men's Collarless Shirts", "Men's Linen Sets", "Men's Heritage Overshirts",
-            "Men's Pique Polos", "Men's Travel Sets", "Men's Ceremony Suits", "Men's Linen Suits",
-            "Men's Cotton Overshirts", "Men's Bomber Jackets", "Men's Double-Breasted Blazers", "Men's Resort Sets",
-            "Men's Merino Knitwear", "Men's Textured Polos", "Men's Corduroy Overshirts", "Men's Three-Piece Suits",
-            "Men's Trucker Jackets", "Men's Band-Collar Shirts"
+            "Men's Linen Resort Sets", "Men's Printed Resort Shirts", "Men's Polo and Chino Sets", "Men's Business Suits",
+            "Men's Linen Shirt and Shorts Sets", "Men's Mandarin Shirts", "Men's Polo and Trouser Sets", "Men's Striped Shirts",
+            "Men's Breton Tee Sets", "Men's Linen Blazer Sets", "Men's Summer Suits", "Men's Denim Jackets",
+            "Men's Linen Blazer Sets", "Men's Linen Shirt Sets", "Men's Cardigan Sets", "Men's Overshirt and Shorts Sets",
+            "Men's Check Shirts", "Men's Resort Shirts", "Men's Cuban Shirt Sets", "Men's Pocket Tee Sets",
+            "Men's Overshirt Sets", "Men's Bomber Jacket Sets", "Men's Double-Breasted Blazer Sets", "Men's Linen Resort Sets",
+            "Men's Quarter-Zip Sets", "Men's Polo and Trouser Sets", "Men's Corduroy Overshirts", "Men's Three-Piece Suits",
+            "Men's Trucker Jackets", "Men's Band-Collar Shirt Sets"
         ],
         prices: [89.90,94.90,99.90,84.90,92.90,96.90,104.90,87.90,98.90,91.90,106.90,93.90,88.90,101.90,95.90,103.90,90.90,97.90,108.90,99.90,94.90,89.90,109.90,86.90,82.90,91.90,96.90,119.90,104.90,84.90],
         sizes: [sizes.standardXL,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.standardXL,sizes.waist,sizes.euXL,sizes.menXL,sizes.eu,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.standardXL,sizes.menXL,sizes.waist,sizes.menXL,sizes.menXL,sizes.standardXL,sizes.eu,sizes.euXL,sizes.standardXL,sizes.standardXL,sizes.euXL,sizes.standardXL,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.euXL,sizes.standardXL,sizes.standardXL]
@@ -63,21 +64,21 @@ const productGroups = {
     accessories: {
         code: "AC", imageFolder: "accessories", imageSuffix: "a",
         names: [
-            "Canvas Equestrian Travel Bag", "Monogram Weekend Holdall", "Coastal Stripe Tote Set", "Saffiano Document Case",
-            "Heritage Leather Briefcase", "Riviera Woven Sun Hat", "Noir Executive Card Holder", "Porto Structured Handbag",
-            "Cognac Bifold Wallet", "Marina Braided Belt", "Aurelia Classic Timepiece", "Linen Resort Scarf",
-            "Oxford Leather Key Case", "Lisbon City Crossbody", "Évora Weekender Set", "Atlantic Canvas Cap",
-            "Verona Chain Shoulder Bag", "Minimalist Travel Organiser", "Regent Automatic Watch", "Algarve Woven Tote"
+            "Sand Canvas Zip-Top Carry Bag", "Natural Crochet Shoulder Tote", "Blue Stripe Seersucker Travel Pouch Set", "Black Gold Cat-Eye Sunglasses",
+            "Navy Sport Sunglasses Pair", "Cognac Leather Family Photo Wallet", "Cobalt Quilted Belt Bag", "Taupe Leather Zip Card Holder",
+            "Crimson Leather Card Wallet", "Monogram Zip Card Organiser", "Mocha Leather Bifold Wallet Set", "Black Floral Embroidered Ankle Boots",
+            "Assorted Cotton Baseball Cap Set", "Olive Felt Fedora Hat", "Silver Black Chronograph Watch", "Black Steel Dive Watch",
+            "Pearl Ceramic Skeleton Watch", "Silver Dress Watch Duo", "Ocean Blue Eau de Parfum", "Ruby Floral Eau de Parfum"
         ],
         categories: [
-            "Travel Bags", "Weekend Holdalls", "Tote Bag Sets", "Document Cases",
-            "Leather Briefcases", "Woven Hats", "Card Holders", "Structured Handbags",
-            "Leather Wallets", "Braided Belts", "Classic Watches", "Resort Scarves",
-            "Leather Key Cases", "Crossbody Bags", "Weekender Sets", "Canvas Caps",
-            "Shoulder Bags", "Travel Organisers", "Automatic Watches", "Woven Totes"
+            "Canvas Carry Bags", "Crochet Tote Bags", "Travel Pouch Sets", "Cat-Eye Sunglasses",
+            "Sport Sunglasses", "Leather Photo Wallets", "Quilted Belt Bags", "Leather Card Holders",
+            "Leather Card Wallets", "Zip Card Organisers", "Leather Wallet Sets", "Embroidered Ankle Boots",
+            "Baseball Cap Sets", "Felt Fedora Hats", "Chronograph Watches", "Dive Watches",
+            "Skeleton Watches", "Dress Watch Sets", "Men's Fragrances", "Women's Fragrances"
         ],
         prices: [24.90,29.90,39.90,44.90,49.90,27.90,34.90,41.90,32.90,46.90,52.90,36.90,28.90,43.90,54.90,31.90,47.90,38.90,56.90,42.90],
-        sizes: Array(20).fill("One Size")
+        sizes: Array.from({ length: 20 }, (_, index) => index === 11 ? sizes.shoes : "One Size")
     }
 };
 
