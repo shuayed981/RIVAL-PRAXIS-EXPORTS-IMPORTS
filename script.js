@@ -17,17 +17,23 @@ const productGroups = {
             "Celeste Linen Co-ord", "Marigold Junior Occasion Dress", "Rosewood Satin Blouse", "Ivory Maroon Embroidered Suit",
             "Lagoon Resort Shirt Dress", "Bordeaux Tailored Jumpsuit", "Pearl Jacquard Evening Dress", "Terracotta Belted Midi Dress",
             "Sage Cotton Poplin Set", "Midnight Velvet Occasion Dress", "Champagne Draped Blouse", "Coral Riviera Maxi Dress",
-            "Emerald Brocade Jacket Set", "Sandstone Minimalist Co-ord", "Verona Woven Cape", "Cobalt Pleated Column Dress"
+            "Emerald Brocade Jacket Set", "Sandstone Minimalist Co-ord", "Verona Woven Cape", "Cobalt Pleated Column Dress",
+            "Pearl Boucle Atelier Set", "Sapphire Satin Wrap Dress", "Terracotta Linen Tailored Set", "Emerald Pleated Halter Dress",
+            "Blush Embroidered Cotton Set", "Charcoal Pinstripe Waistcoat Set", "Ivory Organza Cocktail Dress", "Teal Belted Silk Shirt Dress",
+            "Burgundy Velvet Trouser Suit", "Sand Crochet Resort Set"
         ],
         categories: [
             "Women's Midi Dresses", "Women's Day Dresses", "Women's Coordinates", "Women's Wrap Dresses",
             "Women's Linen Sets", "Girls' Occasion Wear", "Women's Satin Blouses", "Women's Embroidered Suits",
             "Women's Resort Dresses", "Women's Tailored Jumpsuits", "Women's Evening Dresses", "Women's Belted Dresses",
             "Women's Cotton Sets", "Women's Velvet Dresses", "Women's Draped Blouses", "Women's Maxi Dresses",
-            "Women's Brocade Sets", "Women's Minimalist Sets", "Women's Woven Capes", "Women's Pleated Dresses"
+            "Women's Brocade Sets", "Women's Minimalist Sets", "Women's Woven Capes", "Women's Pleated Dresses",
+            "Women's Boucle Sets", "Women's Satin Dresses", "Women's Linen Tailoring", "Women's Halter Dresses",
+            "Women's Embroidered Sets", "Women's Waistcoat Sets", "Women's Cocktail Dresses", "Women's Silk Dresses",
+            "Women's Velvet Suits", "Women's Crochet Sets"
         ],
-        prices: [69.90,74.90,79.90,64.90,72.90,76.90,68.90,82.90,71.90,77.90,84.90,73.90,66.90,81.90,75.90,78.90,86.90,70.90,83.90,79.90],
-        sizes: [sizes.standardXL,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.youth,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.standardXL,sizes.xs,sizes.standard,sizes.standardXL,sizes.xs,"One Size",sizes.standardXL]
+        prices: [69.90,74.90,79.90,64.90,72.90,76.90,68.90,82.90,71.90,77.90,84.90,73.90,66.90,81.90,75.90,78.90,86.90,70.90,83.90,79.90,88.90,76.90,84.90,79.90,74.90,86.90,81.90,83.90,92.90,78.90],
+        sizes: [sizes.standardXL,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.youth,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.standardXL,sizes.standard,sizes.standard,sizes.standardXL,sizes.xs,sizes.standard,sizes.standardXL,sizes.xs,"One Size",sizes.standardXL,sizes.xs,sizes.standardXL,sizes.standardXL,sizes.standard,sizes.xs,sizes.standardXL,sizes.xs,sizes.standardXL,sizes.standardXL,sizes.standard]
     },
     men: {
         code: "MN", imageFolder: "men", imageSuffix: "m",
@@ -36,17 +42,23 @@ const productGroups = {
             "Atlantic Textured Knit Polo", "Sand Tailored Chino", "Midnight Double-Breasted Suit", "Olive Resort Camp Shirt",
             "Graphite Formal Waistcoat", "Modern Tailored Blazer", "Bordeaux Merino Polo", "Ivory Coastal Shirt",
             "Slate Weekend Bomber", "Indigo Mandarin-Collar Shirt", "Urban Linen Layered Set", "Camel Heritage Overshirt",
-            "Marine Pique Polo", "Onyx Travel Co-ord", "Pearl Grey Ceremony Suit", "Mediterranean Linen Suit"
+            "Marine Pique Polo", "Onyx Travel Co-ord", "Pearl Grey Ceremony Suit", "Mediterranean Linen Suit",
+            "Forest Brushed Cotton Overshirt", "Harbour Lightweight Bomber", "Camel Double-Breasted Blazer", "Azure Linen Resort Set",
+            "Graphite Merino Quarter-Zip", "Ecru Textured Polo Set", "Bordeaux Corduroy Overshirt", "Sterling Windowpane Three-Piece Suit",
+            "Rust Trucker Jacket", "White Band-Collar Cotton Shirt"
         ],
         categories: [
             "Men's Linen Shirts", "Men's Polo Shirts", "Men's Overshirts", "Men's Business Suits",
             "Men's Knit Polos", "Men's Tailored Trousers", "Men's Double-Breasted Suits", "Men's Resort Shirts",
             "Men's Formal Waistcoats", "Men's Tailored Blazers", "Men's Merino Polos", "Men's Coastal Shirts",
             "Men's Casual Jackets", "Men's Collarless Shirts", "Men's Linen Sets", "Men's Heritage Overshirts",
-            "Men's Pique Polos", "Men's Travel Sets", "Men's Ceremony Suits", "Men's Linen Suits"
+            "Men's Pique Polos", "Men's Travel Sets", "Men's Ceremony Suits", "Men's Linen Suits",
+            "Men's Cotton Overshirts", "Men's Bomber Jackets", "Men's Double-Breasted Blazers", "Men's Resort Sets",
+            "Men's Merino Knitwear", "Men's Textured Polos", "Men's Corduroy Overshirts", "Men's Three-Piece Suits",
+            "Men's Trucker Jackets", "Men's Band-Collar Shirts"
         ],
-        prices: [89.90,94.90,99.90,84.90,92.90,96.90,104.90,87.90,98.90,91.90,106.90,93.90,88.90,101.90,95.90,103.90,90.90,97.90,108.90,99.90],
-        sizes: [sizes.standardXL,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.standardXL,sizes.waist,sizes.euXL,sizes.menXL,sizes.eu,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.standardXL,sizes.menXL,sizes.waist,sizes.menXL,sizes.menXL,sizes.standardXL,sizes.eu,sizes.euXL]
+        prices: [89.90,94.90,99.90,84.90,92.90,96.90,104.90,87.90,98.90,91.90,106.90,93.90,88.90,101.90,95.90,103.90,90.90,97.90,108.90,99.90,94.90,89.90,109.90,86.90,82.90,91.90,96.90,119.90,104.90,84.90],
+        sizes: [sizes.standardXL,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.standardXL,sizes.waist,sizes.euXL,sizes.menXL,sizes.eu,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.standardXL,sizes.menXL,sizes.waist,sizes.menXL,sizes.menXL,sizes.standardXL,sizes.eu,sizes.euXL,sizes.standardXL,sizes.standardXL,sizes.euXL,sizes.standardXL,sizes.standardXL,sizes.standardXL,sizes.menXL,sizes.euXL,sizes.standardXL,sizes.standardXL]
     },
     accessories: {
         code: "AC", imageFolder: "accessories", imageSuffix: "a",
