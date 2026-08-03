@@ -77,23 +77,32 @@ function loadProducts(type) {
     gallery.replaceChildren(...products.map(product => {
         const card = document.createElement("article");
         card.className = "product-card"; card.dataset.reference = `${product.sku} ${product.legacyReference}`;
+        const media = document.createElement("div"); media.className = "product-media";
         const image = document.createElement("img");
         image.src = product.image; image.alt = `${product.sku} product image`; image.loading = "lazy";
         image.addEventListener("error", () => { image.alt = "Product image unavailable"; image.classList.add("image-error"); }, { once: true });
+        const badge = document.createElement("span"); badge.className = "product-badge"; badge.textContent = "Wholesale";
+        media.append(image, badge);
+        const info = document.createElement("div"); info.className = "product-info";
+        const category = document.createElement("p"); category.className = "product-category"; category.textContent = product.category;
         const reference = document.createElement("p"); reference.className = "product-reference"; reference.textContent = product.sku;
         const price = document.createElement("p"); price.className = "product-price"; price.textContent = `${euros(product.price)} per unit`;
         const moq = document.createElement("p"); moq.className = "product-moq"; moq.textContent = `Minimum order: ${product.moq} units`;
+        info.append(category, reference, price, moq);
         const controls = document.createElement("div"); controls.className = "product-order-controls";
         const select = document.createElement("select"); select.setAttribute("aria-label", `Size for ${product.sku}`);
         sizeOptions(product).forEach(value => select.add(new Option(value, value)));
         const quantity = document.createElement("input"); quantity.type = "number"; quantity.min = String(product.moq); quantity.step = "1"; quantity.value = String(product.moq); quantity.setAttribute("aria-label", `Quantity for ${product.sku}`);
-        const button = document.createElement("button"); button.className = "btn add-order-btn"; button.type = "button"; button.textContent = "Add to Order";
+        const sizeField = document.createElement("label"); sizeField.className = "product-field"; sizeField.append(Object.assign(document.createElement("span"), { textContent: "Size" }), select);
+        const quantityField = document.createElement("label"); quantityField.className = "product-field"; quantityField.append(Object.assign(document.createElement("span"), { textContent: "Quantity" }), quantity);
+        const button = document.createElement("button"); button.className = "btn add-order-btn"; button.type = "button"; button.innerHTML = '<span>Add to Order</span><span aria-hidden="true">&#8594;</span>';
         button.addEventListener("click", () => {
             if (Number(quantity.value) < product.moq) { quantity.value = String(product.moq); quantity.setCustomValidity(`Minimum order is ${product.moq} units.`); quantity.reportValidity(); quantity.setCustomValidity(""); return; }
             addToCart(product.sku, select.value, quantity.value);
-            button.textContent = "Added to Order"; setTimeout(() => { button.textContent = "Add to Order"; }, 1400);
+            button.classList.add("is-added"); button.innerHTML = '<span>Added to Order</span><span aria-hidden="true">&#10003;</span>';
+            setTimeout(() => { button.classList.remove("is-added"); button.innerHTML = '<span>Add to Order</span><span aria-hidden="true">&#8594;</span>'; }, 1400);
         });
-        controls.append(select, quantity); card.append(image, reference, price, moq, controls, button); return card;
+        controls.append(sizeField, quantityField); card.append(media, info, controls, button); return card;
     }));
 }
 
