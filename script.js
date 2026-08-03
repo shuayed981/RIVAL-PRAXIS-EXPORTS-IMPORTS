@@ -1,13 +1,5 @@
 // RIVAL PRAXIS - SHARED PRODUCT CATALOGUE AND WHOLESALE ORDER CART
 
-if (!document.querySelector('script[data-rival-translate]')) {
-    const translationScript = document.createElement("script");
-    translationScript.src = "translate.js?v=20260803";
-    translationScript.dataset.rivalTranslate = "true";
-    document.head.append(translationScript);
-}
-
-
 const RP_CART_KEY = "rivalPraxisWholesaleCartV1";
 const dot = " \u2022 ";
 const sizes = {
