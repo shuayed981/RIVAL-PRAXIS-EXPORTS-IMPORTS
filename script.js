@@ -1,5 +1,13 @@
 // RIVAL PRAXIS - SHARED PRODUCT CATALOGUE AND WHOLESALE ORDER CART
 
+if (!document.querySelector('script[data-rival-translate]')) {
+    const translationScript = document.createElement("script");
+    translationScript.src = "translate.js?v=20260803";
+    translationScript.dataset.rivalTranslate = "true";
+    document.head.append(translationScript);
+}
+
+
 const RP_CART_KEY = "rivalPraxisWholesaleCartV1";
 const dot = " \u2022 ";
 const sizes = {
@@ -138,7 +146,7 @@ function loadProducts(type) {
     if (!gallery || !products.length) return;
     gallery.replaceChildren(...products.map(product => {
         const card = document.createElement("article");
-        card.className = "product-card"; card.dataset.reference = `${product.sku} ${product.legacyReference}`;
+        card.className = "product-card"; card.id = product.sku; card.dataset.reference = `${product.sku} ${product.legacyReference}`;
         const media = document.createElement("div"); media.className = "product-media";
         const image = document.createElement("img");
         image.src = product.image; image.alt = product.name; image.loading = "lazy";

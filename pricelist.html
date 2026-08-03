@@ -69,7 +69,7 @@
         <div class="price-list-wrap">
             <table class="price-list">
                 <thead>
-                    <tr><th scope="col">Reference</th><th scope="col">Category</th><th scope="col">MOQ</th><th scope="col">Wholesale Price (&euro;)</th><th scope="col">Enquiry</th></tr>
+                    <tr><th scope="col">Product</th><th scope="col">Category</th><th scope="col">Reference</th><th scope="col">Sizes</th><th scope="col">MOQ</th><th scope="col">Wholesale Price (&euro;)</th><th scope="col">Order</th></tr>
                 </thead>
                 <tbody id="price-list-body"></tbody>
             </table>
@@ -84,56 +84,7 @@
     <p><a href="mailto:rivalpraxisunipessoallda@gmail.com">rivalpraxisunipessoallda@gmail.com</a></p>
     <p><a href="merchant-information.html">Merchant Information</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns</a><a href="payments.html">Payments</a></p>
 </footer>
-<script src="script.js?v=20260803-order"></script>
-<script>
-    const priceList = [
-        { prefix: "WOMEN", category: "Women's Fashion", prices: [69.90, 74.90, 79.90, 64.90, 72.90, 76.90, 68.90, 82.90, 71.90, 77.90, 84.90, 73.90, 66.90, 81.90, 75.90, 78.90, 86.90, 70.90, 83.90, 79.90] },
-        { prefix: "MEN", category: "Men's Fashion", prices: [89.90, 94.90, 99.90, 84.90, 92.90, 96.90, 104.90, 87.90, 98.90, 91.90, 106.90, 93.90, 88.90, 101.90, 95.90, 103.90, 90.90, 97.90, 108.90, 99.90] },
-        { prefix: "ACCESSORIES", category: "Accessories", prices: [24.90, 29.90, 39.90, 44.90, 49.90, 27.90, 34.90, 41.90, 32.90, 46.90, 52.90, 36.90, 28.90, 43.90, 54.90, 31.90, 47.90, 38.90, 56.90, 42.90] }
-    ];
-
-    const recipient = "rivalpraxisunipessoallda@gmail.com";
-    const tableBody = document.getElementById("price-list-body");
-
-    priceList.forEach(({ prefix, category, prices }) => {
-        prices.forEach((price, index) => {
-            const reference = `${prefix}-${String(index + 1).padStart(2, "0")}`;
-            const formattedPrice = `€${price.toFixed(2)}`;
-            const moq = prefix === "ACCESSORIES"
-                ? (index < 2 ? 600 : index < 4 ? 500 : 400)
-                : (index < 3 ? 500 : 400);
-            const subject = `Quotation Request - ${reference} - ${formattedPrice}`;
-            const body = `Hello RIVAL PRAXIS,\n\nI would like to request a quotation for product ${reference}.\nIndicative wholesale price: ${formattedPrice}\nMinimum order quantity: ${moq} pcs\n\nPlease send me your best available offer and further details.\n\nThank you.`;
-            const quoteUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-            const row = document.createElement("tr");
-            const values = [
-                ["Reference", reference],
-                ["Category", category],
-                ["MOQ", `${moq} pcs`],
-                ["Wholesale Price", formattedPrice]
-            ];
-            values.forEach(([label, value], cellIndex) => {
-                const cell = document.createElement("td");
-                cell.dataset.label = label;
-                cell.textContent = value;
-                if (cellIndex === 3) cell.className = "price";
-                row.appendChild(cell);
-            });
-
-            const actionCell = document.createElement("td");
-            actionCell.dataset.label = "Enquiry";
-            const quoteButton = document.createElement("a");
-            quoteButton.className = "quote-btn";
-            quoteButton.href = quoteUrl;
-            quoteButton.textContent = "Request Quote";
-            quoteButton.setAttribute("aria-label", `Request a quote for ${reference} at ${formattedPrice}`);
-            actionCell.appendChild(quoteButton);
-            row.appendChild(actionCell);
-            tableBody.appendChild(row);
-        });
-    });
-</script>
-<script src="pricelist-order.js"></script>
+<script src="script.js?v=20260803-translate80"></script>
+<script src="pricelist-order.js?v=20260803-translate80"></script>
 </body>
 </html>
