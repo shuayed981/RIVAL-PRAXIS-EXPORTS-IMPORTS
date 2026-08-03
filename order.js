@@ -5,6 +5,7 @@
   const message = document.getElementById("order-message");
   const submitButton = document.getElementById("submit-order");
   const downloadButton = document.getElementById("download-order");
+  const trialButton = document.getElementById("trial-checkout");
   const recipient = "rivalpraxisunipessoallda@gmail.com";
   let currentSubtotal = 0;
 
@@ -67,5 +68,13 @@
     message.textContent = `Order ${order.reference} is ready. A copy was downloaded and your email application is opening so you can send it.`;
   });
   downloadButton.addEventListener("click", () => { if (!validLines().length) return; download(buildOrder(requestReference())); message.textContent = "Your order copy has been downloaded."; });
+  trialButton.addEventListener("click", () => {
+    message.textContent = "";
+    if (!form.reportValidity()) { message.textContent = "Complete the company and delivery details to start the trial."; return; }
+    if (!validLines().length) { message.textContent = "Add at least one product before starting the payment trial."; return; }
+    const order = buildOrder(`RP-DEMO-${requestReference().split("-").slice(2).join("-")}`);
+    sessionStorage.setItem("rivalPraxisDemoQuote", JSON.stringify(order));
+    window.location.assign("pay.html?demo=1");
+  });
   window.addEventListener("rival-cart-change", renderCart); renderCart();
 })();

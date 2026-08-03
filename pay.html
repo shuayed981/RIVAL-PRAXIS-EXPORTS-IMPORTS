@@ -38,6 +38,7 @@
           <p class="form-message" id="lookup-message" role="status" aria-live="polite"></p>
         </form>
         <div id="quote-summary" class="quote-summary" hidden>
+          <div id="demo-payment-notice" class="demo-payment-notice" hidden><strong>Trial mode — no payment will be made.</strong><span>This preview uses the company, delivery and product details entered on the order page.</span></div>
           <div class="step-label"><span>02</span> Review and pay</div>
           <dl>
             <div><dt>Quotation</dt><dd id="summary-reference"></dd></div>
@@ -47,6 +48,7 @@
             <div><dt>Shipping</dt><dd id="summary-shipping"></dd></div>
             <div class="summary-total"><dt>Total payable</dt><dd id="summary-total"></dd></div>
           </dl>
+          <div id="demo-order-details" class="demo-order-details" hidden></div>
           <label class="payment-consent"><input id="accept-terms" type="checkbox"> <span>I confirm that I am authorized to pay for this business and accept the <a href="terms.html" target="_blank">Terms</a>, <a href="payments.html" target="_blank">Payment Policy</a>, and <a href="privacy.html" target="_blank">Privacy Policy</a>.</span></label>
           <button class="btn payment-submit" id="start-payment" type="button" disabled>Continue to Secure Payment</button>
           <p class="form-message" id="payment-message" role="status" aria-live="polite"></p>
@@ -66,8 +68,8 @@
     </section>
   </main>
   <footer><p>&copy; 2026 RIVAL PRAXIS UNIPESSOAL LDA &bull; NIF/NIPC: 519497074</p><p><a href="merchant-information.html">Merchant Information</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns</a><a href="payments.html">Payments</a></p></footer>
-  <script src="script.js?v=20260803-order"></script>
+  <script src="script.js?v=20260803-trial"></script>
   <script src="payment-config.js"></script>
-  <script src="payment.js"></script>
+  <script src="payment.js?v=20260803-trial"></script>
 </body>
 </html>
