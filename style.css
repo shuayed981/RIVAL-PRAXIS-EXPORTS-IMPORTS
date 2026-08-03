@@ -356,17 +356,29 @@ footer p + p a { display: inline-block; padding: 4px 0; }
   footer p + p { gap: 8px 18px; line-height: 1.4; }
 }
 
-/* Wholesale order controls */
+/* Wholesale product cards and order controls */
 .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .cart-link { display: inline-flex; align-items: center; gap: 7px; }
 .cart-count { display: inline-grid; min-width: 22px; height: 22px; padding: 0 6px; place-items: center; border-radius: 999px; background: var(--gold); color: #111; font-size: 11px; font-weight: 700; }
-.product-reference { margin: 15px 0 3px; color: var(--brand); font-size: 14px; font-weight: 700; letter-spacing: .08em; }
-.product-price { margin: 0; color: #17120f; font-size: 18px; font-weight: 700; }
-.product-moq { margin: 3px 0 12px; color: #6e665f; font-size: 12px; }
-.product-order-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 10px; }
-.product-order-controls select,.product-order-controls input { width: 100%; min-width: 0; padding: 11px 10px; border: 1px solid #d9d1ca; border-radius: 5px; background: #fff; color: #17120f; font: inherit; }
-.add-order-btn { width: 100%; border: 0; cursor: pointer; }
-@media (max-width: 420px) { .product-order-controls { grid-template-columns: 1fr; } }
+.product-card { display: flex; min-width: 0; flex-direction: column; background: #fff; }
+.product-card:hover { transform: translateY(-5px); box-shadow: 0 20px 48px rgba(36,25,16,.14); }
+.product-card img { border-bottom: 1px solid #eee7df; }
+.product-reference { position: relative; margin: 22px 22px 5px; color: var(--brand); font-size: 15px; font-weight: 700; letter-spacing: .11em; }
+.product-reference::before { display: inline-block; width: 22px; height: 1px; margin: 0 9px 4px 0; background: var(--gold); content: ""; }
+.product-price { margin: 0 22px; color: #17120f; font-family: "Cormorant Garamond",Georgia,serif; font-size: 27px; font-weight: 700; line-height: 1.1; }
+.product-moq { margin: 8px 22px 18px; color: #746b64; font-size: 12px; font-weight: 500; letter-spacing: .025em; }
+.product-order-controls { display: grid; grid-template-columns: minmax(0,1fr) minmax(105px,.72fr); gap: 10px; margin: auto 22px 12px; }
+.product-order-controls select,.product-order-controls input { width: 100%; min-width: 0; height: 48px; padding: 0 14px; border: 1px solid #d8cfc6; border-radius: 0; background: #fbfaf8; color: #211a16; font: 500 14px/1.2 "Poppins",sans-serif; outline: none; transition: border-color .2s,box-shadow .2s,background .2s; }
+.product-order-controls select:hover,.product-order-controls input:hover { border-color: #ad9c8d; background: #fff; }
+.product-order-controls select:focus,.product-order-controls input:focus { border-color: var(--brand); background: #fff; box-shadow: 0 0 0 3px rgba(140,29,64,.1); }
+.product-order-controls input:invalid { border-color: #a14545; }
+.product-card .add-order-btn { width: auto; min-height: 50px; margin: 0 22px 22px; padding: 14px 18px; border: 1px solid #17120f; background: #17120f; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .16em; cursor: pointer; transition: background .25s,color .25s,border-color .25s,transform .25s; }
+.product-card .add-order-btn:hover,.product-card .add-order-btn:focus-visible { border-color: var(--brand); background: var(--brand); color: #fff; transform: translateY(-2px); }
+@media (max-width: 420px) {
+  .product-reference { margin-top: 18px; }
+  .product-order-controls { grid-template-columns: minmax(0,1fr) 112px; }
+  .product-card .add-order-btn { min-height: 48px; }
+}
 
 @media (max-width: 380px) {
   .hero-actions .btn { max-width: none; }
