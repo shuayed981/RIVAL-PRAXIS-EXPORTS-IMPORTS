@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Build and submit a RIVAL PRAXIS wholesale order request with automatic product totals.">
+  <link rel="icon" href="favicon.ico"><title>Wholesale Order Cart | RIVAL PRAXIS</title>
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="order.css">
+</head>
+<body class="order-page">
+<header><div class="container"><a class="brand-logo" href="index.html" aria-label="RIVAL PRAXIS home"><img src="images/rival-praxis-logo.png" alt="RIVAL PRAXIS"></a><button aria-label="Menu" class="menu-toggle" type="button"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></button><nav><a href="index.html">Home</a><a href="women.html">Women</a><a href="men.html">Men</a><a href="accessories.html">Accessories</a><a href="pricelist.html">Price List</a><a href="pay.html">Pay a Quote</a></nav></div></header>
+<main class="order-main">
+  <section class="order-intro"><p class="eyebrow">Wholesale ordering</p><h1>Build Your Order</h1><p>Select quantities, review the estimated goods total, and send your company and delivery details for a confirmed quotation.</p></section>
+  <div class="order-shell">
+    <div>
+      <section class="order-card" aria-labelledby="cart-heading"><h2 id="cart-heading">Products</h2><div id="cart-lines"></div></section>
+      <form id="customer-form" class="order-card customer-form" novalidate>
+        <h2>Company and delivery details</h2>
+        <div class="form-grid">
+          <label>Company name<input name="company" maxlength="100" autocomplete="organization" required></label>
+          <label>Contact person<input name="contactName" maxlength="100" autocomplete="name" required></label>
+          <label>Email<input name="email" type="email" maxlength="150" autocomplete="email" required></label>
+          <label>Telephone<input name="phone" type="tel" maxlength="30" autocomplete="tel" required></label>
+          <label>VAT / tax number<input name="taxNumber" maxlength="40"></label>
+          <label>Country<select name="country" required><option value="">Select country</option><option>Portugal</option><option>Spain</option><option>France</option><option>Germany</option><option>Italy</option><option>Netherlands</option><option>Belgium</option><option>Ireland</option><option>United Kingdom</option><option>Other</option></select></label>
+          <label class="full">Delivery address<input name="address" maxlength="200" autocomplete="street-address" required></label>
+          <label>City<input name="city" maxlength="80" autocomplete="address-level2" required></label>
+          <label>Postcode<input name="postcode" maxlength="20" autocomplete="postal-code" required></label>
+          <label class="full">Order notes<textarea name="notes" maxlength="1000" placeholder="Colours, delivery deadline, packaging or other requirements"></textarea></label>
+        </div>
+      </form>
+    </div>
+    <aside class="order-card order-summary"><h2>Estimated total</h2><div class="totals"><div><span>Goods subtotal</span><strong id="order-subtotal">€0.00</strong></div><div><span>VAT / taxes</span><strong>Calculated on quote</strong></div><div><span>Shipping</span><strong>Calculated on quote</strong></div><div class="grand-total"><span>Estimated goods</span><strong id="order-total">€0.00</strong></div></div><p class="tax-note">Final VAT, duties, shipping, availability and payment terms are confirmed in your written quotation.</p><div class="order-actions"><button class="btn" id="submit-order" type="submit" form="customer-form">Request Confirmed Quote</button><button class="btn secondary-action" id="download-order" type="button">Download Order Copy</button></div><p class="order-message" id="order-message" role="status" aria-live="polite"></p><div class="payment-ready"><strong>Hosted payment ready.</strong><br>After your quotation is approved, its secure reference can be paid through REDUNIQ or Getnet once the selected merchant account is activated.</div></aside>
+  </div>
+</main>
+<footer><p>&copy; 2026 RIVAL PRAXIS UNIPESSOAL LDA &bull; NIF/NIPC: 519497074</p><p><a href="merchant-information.html">Merchant Information</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns</a><a href="payments.html">Payments</a></p></footer>
+<script src="script.js"></script><script src="order.js"></script>
+</body></html>

@@ -18,7 +18,7 @@
   lookupForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!PAYMENT_SERVICE_ENABLED) {
-      lookupMessage.textContent = "Secure online payment activation is in progress. Contact payment support to pay an approved quotation.";
+      lookupMessage.textContent = "REDUNIQ / Getnet hosted payment activation is in progress. Contact payment support to pay an approved quotation.";
       return;
     }
     const button = lookupForm.querySelector("button[type=submit]");
