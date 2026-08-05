@@ -24,6 +24,16 @@ test("all local images referenced by public pages exist", () => {
   }
 });
 
+test("all local assets referenced by stylesheets exist", () => {
+  for (const file of readdirSync(root).filter(name => name.endsWith(".css"))) {
+    const css = read(file);
+    for (const match of css.matchAll(/url\(["']?([^"')#?]+)["']?\)/gi)) {
+      if (/^(?:data:|https?:|\/\/)/i.test(match[1])) continue;
+      assert.ok(existsSync(join(root, match[1])), `${file} references missing ${match[1]}`);
+    }
+  }
+});
+
 test("merchant identity and complete street address are consistent", () => {
   for (const file of ["index.html", "merchant-information.html", "pay.html", "terms.html", "privacy.html", "cookies.html", "shipping.html", "returns.html", "payments.html"]) {
     assert.match(read(file), /446 R\/C/iu, `${file} lacks the registered street number`);
