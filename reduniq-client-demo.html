@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Reduniq Client Walkthrough | RIVAL PRAXIS</title>
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="reduniq-client-demo.css">
+</head>
+<body class="demo-page">
+  <header><div class="container"><a class="brand-logo" href="index.html" aria-label="RIVAL PRAXIS home"><img src="images/rival-praxis-logo.png" alt="RIVAL PRAXIS"></a></div></header>
+  <main class="demo-main">
+    <section class="demo-intro">
+      <p class="eyebrow">Client demonstration</p>
+      <h1>Wholesale Purchase Walkthrough</h1>
+      <p>This example shows how an approved wholesale order moves from product selection to delivery using Reduniq hosted payments.</p>
+      <div class="demo-notice"><strong>Demonstration only.</strong> No order, card details or payment will be submitted.</div>
+    </section>
+
+    <div class="demo-progress" aria-label="Walkthrough progress"><span id="demo-progress-bar"></span></div>
+    <p class="demo-step-count" id="demo-step-count"></p>
+
+    <section class="demo-stage" aria-live="polite">
+      <article class="demo-screen active" data-title="Select products">
+        <p class="eyebrow">RIVAL PRAXIS collection</p><h2>Select Wholesale Products</h2>
+        <div class="demo-products">
+          <div class="demo-product"><img src="images/men/4m.jpg" alt="Men's wholesale garment"><h3>Premium Tailored Jacket</h3><p>Reference RP-MN-0004 · Size M · MOQ 20</p><strong>€48.00 each</strong><span class="demo-added">Added: 20 units</span></div>
+          <div class="demo-product"><img src="images/accessories/3a.jpg" alt="Wholesale accessory"><h3>Signature Leather Accessory</h3><p>Reference RP-AC-0003 · MOQ 25</p><strong>€24.00 each</strong><span class="demo-added">Added: 25 units</span></div>
+        </div>
+      </article>
+
+      <article class="demo-screen" data-title="Billing and quote request">
+        <p class="eyebrow">Order cart</p><h2>Company and Billing Details</h2>
+        <div class="demo-grid"><div><span>Company</span><strong>Atlantic Retail LDA</strong></div><div><span>Registration number</span><strong>PT-516000001</strong></div><div><span>VAT number</span><strong>516000001</strong></div><div><span>Billing email</span><strong>accounts@atlantic-retail.example</strong></div><div><span>Delivery</span><strong>Lisboa, Portugal</strong></div><div><span>Estimated goods</span><strong>€1,560.00</strong></div></div>
+        <p class="demo-check">☑ Terms and Conditions accepted &nbsp; ☑ Privacy Policy acknowledged</p>
+        <div class="demo-result"><strong>Quote request created</strong><span>Request reference: RP-RQ-20260805-DEMO01</span><span>Request date: 05/08/2026</span></div>
+      </article>
+
+      <article class="demo-screen" data-title="Quotation issued">
+        <div class="demo-document"><div class="demo-document-head"><div><p class="eyebrow">RIVAL PRAXIS</p><h2>Wholesale Quotation</h2></div><div><strong>RP-Q-2026-DEMO01</strong><span>Quote date: 05/08/2026</span><span>Valid until: 19/08/2026</span></div></div><p><strong>Prepared for:</strong> Atlantic Retail LDA · Registration PT-516000001</p><table><thead><tr><th>Reference</th><th>Description</th><th>Qty</th><th>Total</th></tr></thead><tbody><tr><td>RP-MN-0004</td><td>Premium Tailored Jacket</td><td>20</td><td>€960.00</td></tr><tr><td>RP-AC-0003</td><td>Signature Leather Accessory</td><td>25</td><td>€600.00</td></tr></tbody></table><dl><div><dt>Goods subtotal</dt><dd>€1,560.00</dd></div><div><dt>VAT</dt><dd>€358.80</dd></div><div><dt>Shipping</dt><dd>€45.00</dd></div><div><dt>Total payable</dt><dd>€1,963.80</dd></div></dl><p class="demo-check">☑ Client accepts the quotation, Terms and Privacy Policy</p></div>
+      </article>
+
+      <article class="demo-screen" data-title="Secure payment handoff">
+        <p class="eyebrow">Approved quotation</p><h2>Review and Continue to Payment</h2>
+        <div class="demo-grid"><div><span>Quotation</span><strong>RP-Q-2026-DEMO01</strong></div><div><span>Company</span><strong>Atlantic Retail LDA</strong></div><div><span>Billing email</span><strong>accounts@atlantic-retail.example</strong></div><div><span>Total payable</span><strong>€1,963.80</strong></div></div>
+        <div class="demo-handoff"><div><strong>RIVAL PRAXIS</strong><span>Verifies the approved quote and exact amount</span></div><b>→</b><div><strong>REDUNIQ</strong><span>Opens the secure hosted payment page</span></div></div>
+        <p class="demo-check">The customer selects “Continue to Secure Payment”.</p>
+      </article>
+
+      <article class="demo-screen" data-title="Reduniq and bank authorization">
+        <div class="hosted-frame"><div class="hosted-bar"><span>🔒</span><strong>Reduniq secure hosted payment page</strong></div><div class="hosted-content"><p class="eyebrow">Secure card payment</p><h2>€1,963.80 EUR</h2><p>The customer enters card details directly on Reduniq’s page.</p><div class="hosted-placeholder">Card details are handled by Reduniq<br><small>They are never entered on or stored by RIVAL PRAXIS.</small></div><div class="bank-status"><span>REDUNIQ</span><b>→</b><span>Customer’s bank</span><b>→</b><strong>Authorized</strong></div></div></div>
+      </article>
+
+      <article class="demo-screen" data-title="Confirmation and fulfilment">
+        <div class="demo-success">✓</div><p class="eyebrow">Payment verified</p><h2>Wholesale Order Confirmed</h2>
+        <div class="demo-grid"><div><span>Quotation</span><strong>RP-Q-2026-DEMO01</strong></div><div><span>Transaction</span><strong>REDUNIQ-DEMO-78421</strong></div><div><span>Verified amount</span><strong>€1,963.80 EUR</strong></div><div><span>Status</span><strong>Bank authorized</strong></div></div>
+        <div class="demo-timeline"><div><b>1</b><span><strong>Payment confirmation</strong>Stored with the order record</span></div><div><b>2</b><span><strong>Invoice issued</strong>Prepared by the accounting team</span></div><div><b>3</b><span><strong>Supplier purchase</strong>Goods ordered for fulfilment</span></div><div><b>4</b><span><strong>Delivery</strong>Tracking and records retained</span></div></div>
+      </article>
+    </section>
+
+    <div class="demo-controls"><button class="btn secondary-action" id="demo-back" type="button">Back</button><button class="btn" id="demo-next" type="button">Next Step</button></div>
+  </main>
+  <script src="reduniq-client-demo.js"></script>
+</body>
+</html>
