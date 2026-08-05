@@ -20,12 +20,14 @@
           <label>Contact person<input name="contactName" maxlength="100" autocomplete="name" required></label>
           <label>Email<input name="email" type="email" maxlength="150" autocomplete="email" required></label>
           <label>Telephone<input name="phone" type="tel" maxlength="30" autocomplete="tel" required></label>
+          <label>Company registration number<input name="registrationNumber" maxlength="40" required></label>
           <label>VAT / tax number<input name="taxNumber" maxlength="40"></label>
           <label>Country<select name="country" required><option value="">Select country</option><option>Portugal</option><option>Spain</option><option>France</option><option>Germany</option><option>Italy</option><option>Netherlands</option><option>Belgium</option><option>Ireland</option><option>United Kingdom</option><option>Other</option></select></label>
           <label class="full">Delivery address<input name="address" maxlength="200" autocomplete="street-address" required></label>
           <label>City<input name="city" maxlength="80" autocomplete="address-level2" required></label>
           <label>Postcode<input name="postcode" maxlength="20" autocomplete="postal-code" required></label>
           <label class="full">Order notes<textarea name="notes" maxlength="1000" placeholder="Colours, delivery deadline, packaging or other requirements"></textarea></label>
+          <label class="full"><input name="legalConsent" type="checkbox" value="accepted" required> I accept the <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms and Conditions</a> and acknowledge the <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</label>
         </div>
       </form>
     </div>

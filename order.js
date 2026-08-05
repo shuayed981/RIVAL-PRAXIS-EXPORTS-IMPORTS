@@ -53,13 +53,16 @@
 
   function buildOrder(reference) {
     const customer = Object.fromEntries(new FormData(form).entries());
+    customer.termsAccepted = customer.legalConsent === "accepted";
+    customer.privacyAccepted = customer.legalConsent === "accepted";
+    delete customer.legalConsent;
     const items = validLines().map(item => ({ reference: item.product.sku, category: item.product.category, size: item.size, quantity: item.quantity, unitPrice: item.product.price, lineTotal: Number((item.product.price * item.quantity).toFixed(2)) }));
     return { reference, createdAt: new Date().toISOString(), currency: "EUR", estimatedGoodsTotal: Number(currentSubtotal.toFixed(2)), customer, items };
   }
 
   function orderText(order) {
     const lines = order.items.map((item, i) => `${i + 1}. ${item.reference} | ${item.category} | Size: ${item.size} | Qty: ${item.quantity} | Unit: ${RIVAL_CART.money(item.unitPrice)} | Line: ${RIVAL_CART.money(item.lineTotal)}`);
-    return [`WHOLESALE ORDER REQUEST ${order.reference}`, `Created: ${new Date(order.createdAt).toLocaleString("en-GB")}`, "", "CUSTOMER", `Company: ${order.customer.company}`, `Contact: ${order.customer.contactName}`, `Email: ${order.customer.email}`, `Telephone: ${order.customer.phone}`, `VAT / tax number: ${order.customer.taxNumber || "Not supplied"}`, `Delivery: ${order.customer.address}, ${order.customer.city}, ${order.customer.postcode}, ${order.customer.country}`, "", "PRODUCTS", ...lines, "", `ESTIMATED GOODS TOTAL: ${RIVAL_CART.money(order.estimatedGoodsTotal)}`, "VAT, taxes, shipping, stock availability and the final payable total remain subject to a confirmed written quotation.", "", `Notes: ${order.customer.notes || "None"}`].join("\n");
+    return [`WHOLESALE ORDER REQUEST ${order.reference}`, `Quote request date: ${new Date(order.createdAt).toLocaleDateString("en-GB")}`, "", "CUSTOMER", `Company: ${order.customer.company}`, `Company registration number: ${order.customer.registrationNumber}`, `Contact: ${order.customer.contactName}`, `Email: ${order.customer.email}`, `Telephone: ${order.customer.phone}`, `VAT / tax number: ${order.customer.taxNumber || "Not supplied"}`, `Delivery: ${order.customer.address}, ${order.customer.city}, ${order.customer.postcode}, ${order.customer.country}`, "", "PRODUCTS", ...lines, "", `ESTIMATED GOODS TOTAL: ${RIVAL_CART.money(order.estimatedGoodsTotal)}`, "VAT, taxes, shipping, stock availability and the final payable total remain subject to a confirmed written quotation.", "Terms and Privacy: accepted", "Card details are entered only on REDUNIQ's secure hosted payment page.", "", `Notes: ${order.customer.notes || "None"}`].join("\n");
   }
 
   function download(order) {

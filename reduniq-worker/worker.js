@@ -295,7 +295,8 @@ async function quoteView(request, env, origin) {
 
 async function quoteAccept(request, env, origin) {
   if (!commerceEnabled(env)) return json({ message: "Online quotation acceptance is not active yet." }, 503, origin);
-  return json(await acceptQuote(env, (await bodyOf(request)).token), 200, origin);
+  const input = await bodyOf(request);
+  return json(await acceptQuote(env, input.token, input), 200, origin);
 }
 
 async function adminEndpoint(request, env, origin, action) {

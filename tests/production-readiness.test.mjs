@@ -78,6 +78,22 @@ test("automatic fiscal invoicing is absent and manual payment proof is explicit"
   assert.match(statusPage, /Print payment confirmation/);
 });
 
+test("billing and quotation records include the required business and legal fields", () => {
+  const orderPage = read("order.html");
+  const quotePage = read("quote.html");
+  const quoteScript = read("quote.js");
+  const commerce = read("reduniq-worker/commerce-service.js");
+  assert.match(orderPage, /name="registrationNumber"[^>]*required/);
+  assert.match(orderPage, /name="legalConsent"[^>]*required/);
+  assert.match(quotePage, /id="quote-reference"/);
+  assert.match(quotePage, /id="quote-date"/);
+  assert.match(quotePage, /id="quote-registration"/);
+  assert.match(quotePage, /id="quote-legal-consent"/);
+  assert.match(quoteScript, /termsAccepted: true, privacyAccepted: true/);
+  assert.match(commerce, /Terms and Privacy acceptance is required/);
+  assert.doesNotMatch(`${orderPage}${quotePage}${read("pay.html")}`, /type="(?:text|password)"[^>]*(?:card|cvv|cvc)|name="(?:card|cvv|cvc)/i);
+});
+
 test("administrator token remains memory-only and expires", () => {
   const admin = read("admin.js");
   assert.doesNotMatch(admin, /(?:local|session)Storage/);

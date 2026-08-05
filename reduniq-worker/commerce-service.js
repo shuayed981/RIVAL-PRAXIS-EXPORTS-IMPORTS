@@ -18,7 +18,7 @@ async function event(env, type, id, name, data = {}) {
 }
 
 function customer(input) {
-  return { company: clean(input.company, 120), contactName: clean(input.contactName, 120), email: clean(input.email, 150).toLowerCase(), phone: clean(input.phone, 30), taxNumber: clean(input.taxNumber, 40), country: clean(input.country, 60), address: clean(input.address, 200), city: clean(input.city, 80), postcode: clean(input.postcode, 20) };
+  return { company: clean(input.company, 120), registrationNumber: clean(input.registrationNumber, 40), contactName: clean(input.contactName, 120), email: clean(input.email, 150).toLowerCase(), phone: clean(input.phone, 30), taxNumber: clean(input.taxNumber, 40), country: clean(input.country, 60), address: clean(input.address, 200), city: clean(input.city, 80), postcode: clean(input.postcode, 20), termsAccepted: input.termsAccepted === true, privacyAccepted: input.privacyAccepted === true };
 }
 
 function items(input) {
@@ -46,7 +46,8 @@ function allocateAmounts(lines, subtotal, tax) {
 export async function createQuoteRequest(env, input) {
   if (!env.INVOICES_DB) throw new Error("Commerce database is not configured");
   const buyer = customer(input.customer || {}); const lines = items(input.items);
-  if (!buyer.company || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyer.email) || !buyer.address || !lines.length) throw new Error("Complete company details and at least one product are required");
+  if (!buyer.company || !buyer.registrationNumber || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyer.email) || !buyer.address || !lines.length) throw new Error("Complete company details and at least one product are required");
+  if (!buyer.termsAccepted || !buyer.privacyAccepted) throw new Error("Terms and Privacy acceptance is required");
   const reference = ref("RP-RQ"); const id = crypto.randomUUID(); const created = now();
   const estimatedSubtotal = lines.reduce((sum, line) => sum + line.lineTotal, 0);
   await env.INVOICES_DB.prepare(`INSERT INTO quote_requests(id,request_reference,customer_email,customer_json,items_json,estimated_subtotal,currency,notes,status,created_at,updated_at)
@@ -62,10 +63,11 @@ export async function createQuoteRequest(env, input) {
 export async function publicQuoteByToken(env, token) {
   const row = await env.INVOICES_DB.prepare("SELECT * FROM commerce_quotes WHERE acceptance_token_hash=?1").bind(await sha256(token)).first();
   if (!row) return null;
-  return { quoteReference: row.quote_reference, customer: JSON.parse(row.customer_json), items: JSON.parse(row.items_json), subtotal: row.subtotal, tax: row.tax, shipping: row.shipping, total: row.total, currency: row.currency, status: row.status, expiresAt: row.expires_at };
+  return { quoteReference: row.quote_reference, quoteDate: row.sent_at || row.created_at, customer: JSON.parse(row.customer_json), items: JSON.parse(row.items_json), subtotal: row.subtotal, tax: row.tax, shipping: row.shipping, total: row.total, currency: row.currency, status: row.status, expiresAt: row.expires_at };
 }
 
-export async function acceptQuote(env, token) {
+export async function acceptQuote(env, token, acceptance = {}) {
+  if (acceptance.termsAccepted !== true || acceptance.privacyAccepted !== true) throw new Error("Terms and Privacy acceptance is required");
   const hash = await sha256(token); const row = await env.INVOICES_DB.prepare("SELECT * FROM commerce_quotes WHERE acceptance_token_hash=?1").bind(hash).first();
   if (!row) throw new Error("Quotation was not found");
   if (row.expires_at && Date.parse(row.expires_at) < Date.now()) throw new Error("Quotation has expired");
