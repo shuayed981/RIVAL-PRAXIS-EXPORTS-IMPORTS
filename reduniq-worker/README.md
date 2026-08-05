@@ -5,20 +5,30 @@ This worker keeps REDUNIQ credentials out of the public website and allows custo
 ## Required external setup
 
 1. Obtain REDUNIQ sandbox credentials and the enabled payment-solution code from REDUNIQ.
-2. Create a Cloudflare Worker and a KV namespace bound as `QUOTES`.
-3. Add encrypted Worker secrets named `REDUNIQ_API_USERNAME` and `REDUNIQ_API_PASSWORD`.
-4. Replace the KV IDs in `wrangler.jsonc`, deploy in sandbox mode, and connect `payments.rivalpraxis.com` to the Worker.
+2. Create a Cloudflare Worker and a D1 database bound as `INVOICES_DB`.
+3. Apply the tracked D1 migrations and add encrypted Worker secrets named `REDUNIQ_API_USERNAME` and `REDUNIQ_API_PASSWORD`.
+4. Confirm the D1 binding in `wrangler.jsonc`, deploy with both activation switches off, and connect `payments.rivalpraxis.com` to the Worker.
 5. Ask REDUNIQ to validate the sandbox flow. Only after acceptance, change `REDUNIQ_ENVIRONMENT` to `production` and add production credentials as secrets.
 
 `wrangler.jsonc` defaults to the current REDUNIQ REST API v7.0 and attaches the Worker to `payments.rivalpraxis.com` as a Cloudflare Custom Domain. If REDUNIQ explicitly assigns API v6.0 to this merchant, change only `REDUNIQ_API_VERSION` to `6.0`. The Worker uses `transaction.status` as REDUNIQ's authoritative result and also requires the exact approved server-side amount.
 
-The manual GitHub workflow `.github/workflows/deploy-payment-worker.yml` deploys the Worker only after the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are installed. It deliberately refuses to deploy while KV IDs or the payment-solution code are placeholders.
+The manual GitHub workflow `.github/workflows/deploy-payment-worker.yml` applies ordered D1 migrations and deploys the Worker after the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are installed. It deliberately keeps commerce and payments disabled, allowing hardened code to be deployed before merchant credentials arrive.
 
 The public payment switch in `payment-config.js` must remain `enabled: false` until the Worker hostname resolves, TLS is valid, sandbox testing is accepted and production credentials are installed. If the acquiring agreement names Getnet rather than REDUNIQ, obtain the exact Getnet product and API specification before deployment; Getnet credentials are not interchangeable with REDUNIQ credentials.
 
+## Manual invoicing
+
+The Worker does not create or store fiscal invoices. Confirmed payments create durable transaction evidence, payment-confirmation emails and a printable customer payment confirmation marked as not being a tax invoice. The accountant issues the official invoice separately in AT-certified software. Follow `../INVOICING.md`.
+
+## Complete commerce workflow
+
+The schema migrations and `commerce-service.js` add persistent quote requests, private customer acceptance links, order creation and status history. `/admin.html` is the protected staff Commerce Desk. Its API requires the encrypted `ADMIN_API_TOKEN`; the token is never placed in website source.
+
+Transactional messages use Resend when `EMAIL_PROVIDER=resend` and the encrypted `RESEND_API_KEY` is installed. The system emails request acknowledgements, new-request alerts, confirmed quotations, acceptance/payment confirmations, manual-invoice reminders and fulfilment updates. Idempotency records prevent successful messages from being sent twice.
+
 ## Approved quotation record
 
-Before sending a payment link, staff must create one KV record. The key is `quote:RP-2026-00124`. The value is JSON like this:
+Approved quotations are created through the protected admin API and stored in D1. Do not create payment records manually or place customer data in KV. A stored quotation snapshot has this logical shape:
 
 ```json
 {
@@ -37,7 +47,7 @@ Before sending a payment link, staff must create one KV record. The key is `quot
   "currency": "EUR",
   "expiresAt": "2026-09-01T23:59:59Z",
   "items": [
-    { "name": "Approved wholesale order", "amount": 100000, "tax": 23000, "quantity": 1 }
+    { "sku": "RP-AC-0003", "name": "Approved wholesale order", "amount": 100000, "tax": 23000, "taxRate": 23, "quantity": 1 }
   ],
   "billing": {
     "street1": "Customer address",

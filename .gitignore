@@ -3,6 +3,11 @@
 reduniq-worker/.dev.vars
 node_modules/
 .wrangler/
+.publish-checkout/
+github-upload-final/
+output/
+__pycache__/
+*.pyc
 
 # Operating-system files
 Thumbs.db

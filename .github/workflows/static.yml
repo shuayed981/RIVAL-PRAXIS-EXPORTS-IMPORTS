@@ -33,11 +33,21 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Build public-site artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp -- *.html *.css *.js CNAME robots.txt sitemap.xml favicon.ico favicon.png apple-touch-icon.png _site/
+          cp -R images _site/images
+          if find _site -type f \( -path '*/reduniq-worker/*' -o -name '*.sql' -o -name '*.md' -o -name '.dev.vars*' \) | grep -q .; then
+            echo "Private backend or documentation files entered the public artifact."
+            exit 1
+          fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

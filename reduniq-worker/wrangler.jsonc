@@ -3,18 +3,30 @@
   "name": "rival-praxis-reduniq-payments",
   "main": "worker.js",
   "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "logs": { "head_sampling_rate": 1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.01 }
+  },
   "workers_dev": false,
   "routes": [
     { "pattern": "payments.rivalpraxis.com", "custom_domain": true }
   ],
+  "triggers": { "crons": ["*/15 * * * *"] },
   "vars": {
     "SITE_ORIGIN": "https://rivalpraxis.com",
     "API_ORIGIN": "https://payments.rivalpraxis.com",
     "REDUNIQ_ENVIRONMENT": "sandbox",
     "REDUNIQ_API_VERSION": "7.0",
-    "REDUNIQ_PAYMENT_SOLUTION": ""
+    "REDUNIQ_PAYMENT_SOLUTION": "",
+    "COMMERCE_ENABLED": "false",
+    "PAYMENTS_ENABLED": "false",
+    "EMAIL_PROVIDER": "disabled",
+    "EMAIL_FROM": "RIVAL PRAXIS <orders@rivalpraxis.com>",
+    "MERCHANT_ORDER_EMAIL": "rivalpraxisunipessoallda@gmail.com"
   },
-  "kv_namespaces": [
-    { "binding": "QUOTES", "id": "REPLACE_WITH_KV_NAMESPACE_ID", "preview_id": "REPLACE_WITH_PREVIEW_KV_NAMESPACE_ID" }
+  "d1_databases": [
+    { "binding": "INVOICES_DB", "database_name": "rival-praxis-invoices", "database_id": "ddd02fb3-d141-458c-86df-240a1cc10a8e" }
   ]
 }

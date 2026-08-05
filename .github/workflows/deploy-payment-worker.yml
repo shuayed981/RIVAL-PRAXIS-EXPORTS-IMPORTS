@@ -15,14 +15,21 @@ jobs:
       - name: Reject incomplete payment configuration
         shell: bash
         run: |
-          if grep -q "REPLACE_WITH" reduniq-worker/wrangler.jsonc; then
-            echo "Replace the KV namespace placeholders before deployment."
+          if ! grep -q '"PAYMENTS_ENABLED": "false"' reduniq-worker/wrangler.jsonc; then
+            echo "Deployments must keep the server-side payment switch disabled until sandbox approval."
             exit 1
           fi
-          if grep -q '"REDUNIQ_PAYMENT_SOLUTION": ""' reduniq-worker/wrangler.jsonc; then
-            echo "Set the REDUNIQ payment solution supplied for this merchant."
+          if ! grep -q '"COMMERCE_ENABLED": "false"' reduniq-worker/wrangler.jsonc; then
+            echo "Deployments must keep commerce disabled until staging verification is complete."
             exit 1
           fi
+      - name: Apply production hardening migration
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: reduniq-worker
+          command: d1 migrations apply rival-praxis-invoices --remote
       - name: Deploy Worker and custom domain
         uses: cloudflare/wrangler-action@v3
         with:
