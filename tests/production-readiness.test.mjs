@@ -68,13 +68,17 @@ test("payment state, rate limits, and audits use D1 rather than public KV", () =
   assert.match(worker, /commerce_events/);
 });
 
-test("automatic fiscal invoicing is absent and manual payment proof is explicit", () => {
+test("payment receipt, notifications and fulfilment are automatic after verification", () => {
   const worker = read("reduniq-worker/worker.js");
+  const commerce = read("reduniq-worker/commerce-service.js");
   const statusPage = read("payment-status.html");
-  assert.doesNotMatch(worker, /invoice-service|\/api\/invoice|ensureInvoice/);
-  assert.ok(!existsSync(join(root, "reduniq-worker/invoice-service.js")));
-  assert.match(worker, /manual_invoice_required/);
-  assert.match(statusPage, /proof of payment, not a tax invoice/i);
+  assert.match(worker, /ensurePaymentReceipt/);
+  assert.match(worker, /fulfillment-/);
+  assert.match(commerce, /receipt_generated/);
+  assert.match(commerce, /fulfillment_triggered/);
+  assert.match(commerce, /status='processing'/);
+  assert.doesNotMatch(`${worker}${statusPage}`, /manual invoice|required.*manual|prepared manually/i);
+  assert.match(statusPage, /automatically generated payment receipt/i);
   assert.match(statusPage, /Print payment confirmation/);
 });
 
@@ -92,6 +96,27 @@ test("billing and quotation records include the required business and legal fiel
   assert.match(quoteScript, /termsAccepted: true, privacyAccepted: true/);
   assert.match(commerce, /Terms and Privacy acceptance is required/);
   assert.doesNotMatch(`${orderPage}${quotePage}${read("pay.html")}`, /type="(?:text|password)"[^>]*(?:card|cvv|cvc)|name="(?:card|cvv|cvc)/i);
+});
+
+test("normal checkout bypasses quotation request, review, acceptance and lookup", () => {
+  const orderPage = read("order.html");
+  const orderScript = read("order.js");
+  const worker = read("reduniq-worker/worker.js");
+  const commerce = read("reduniq-worker/commerce-service.js");
+  assert.match(orderScript, /\/order\/checkout/);
+  assert.doesNotMatch(orderScript, /\/quote\/request|mailto:|Request Confirmed Quote/);
+  assert.doesNotMatch(orderPage, /Pay a Quote|confirmed quotation/i);
+  assert.match(orderPage, /No quotation or staff approval is required/i);
+  assert.match(worker, /automaticCheckout/);
+  assert.match(commerce, /createAutomaticOrder/);
+});
+
+test("automated checkout prices SKUs and MOQ from the server catalogue", () => {
+  const catalogue = read("reduniq-worker/catalog.js");
+  const commerce = read("reduniq-worker/commerce-service.js");
+  assert.match(catalogue, /RP-\$\{code\}/);
+  assert.match(catalogue, /quantity < product\.moq/);
+  assert.match(commerce, /priceCart\(input\.items\)/);
 });
 
 test("administrator token remains memory-only and expires", () => {
@@ -113,4 +138,10 @@ test("the complete D1 schema is tracked as the first deployment migration", () =
   for (const table of ["quote_requests", "commerce_quotes", "orders", "commerce_events", "payment_sessions", "api_rate_limits", "email_events"]) {
     assert.match(baseMigration, new RegExp(`CREATE TABLE IF NOT EXISTS ${table}`));
   }
+});
+
+test("automatic payment receipts are tracked in a deployment migration", () => {
+  const migration = read("reduniq-worker/migrations/0002-automatic-checkout.sql");
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS payment_receipts/);
+  assert.match(migration, /transaction_id TEXT NOT NULL UNIQUE/);
 });

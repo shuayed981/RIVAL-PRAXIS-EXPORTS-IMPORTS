@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "rival-praxis-reduniq-payments",
   "main": "worker.js",
-  "compatibility_date": "2026-08-01",
+  "compatibility_date": "2026-08-06",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true,
@@ -20,6 +20,7 @@
     "REDUNIQ_ENVIRONMENT": "sandbox",
     "REDUNIQ_API_VERSION": "7.0",
     "REDUNIQ_PAYMENT_SOLUTION": "",
+    "AUTOMATED_CHECKOUT_RULES": "{}",
     "COMMERCE_ENABLED": "false",
     "PAYMENTS_ENABLED": "false",
     "EMAIL_PROVIDER": "disabled",

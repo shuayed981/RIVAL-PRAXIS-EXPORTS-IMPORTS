@@ -5,20 +5,11 @@
   const message = document.getElementById("order-message");
   const submitButton = document.getElementById("submit-order");
   const downloadButton = document.getElementById("download-order");
-  const recipient = "rivalpraxisunipessoallda@gmail.com";
   const paymentConfig = window.RIVAL_PAYMENT_CONFIG || {};
   let currentSubtotal = 0;
 
-  const safe = value => String(value || "").trim();
-  const requestReference = () => {
-    const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
-    const random = crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase().padStart(6, "0").slice(-6);
-    return `RP-RQ-${date}-${random}`;
-  };
-
-  function validLines() {
-    return RIVAL_CART.read().map(item => ({ ...item, product: RIVAL_CART.product(item.sku) })).filter(item => item.product);
-  }
+  const checkoutKey = () => `${crypto.randomUUID().replaceAll("-", "")}${crypto.randomUUID().replaceAll("-", "")}`;
+  const validLines = () => RIVAL_CART.read().map(item => ({ ...item, product: RIVAL_CART.product(item.sku) })).filter(item => item.product);
 
   function renderCart() {
     const lines = validLines(); currentSubtotal = 0;
@@ -41,54 +32,42 @@
       const total = document.createElement("div"); total.className = "line-total"; total.textContent = RIVAL_CART.money(lineTotal);
       const remove = document.createElement("button"); remove.className = "remove-line"; remove.type = "button"; remove.setAttribute("aria-label", `Remove ${item.product.sku}`); remove.textContent = "×";
       row.append(image, details, quantityWrap, total, remove);
-      const qty = row.querySelector("input"); qty.addEventListener("change", () => {
-        const cart = RIVAL_CART.read(); const target = cart.find(entry => entry.sku === item.sku && entry.size === item.size);
-        if (!target) return; target.quantity = Math.max(item.product.moq, Math.floor(Number(qty.value) || item.product.moq)); RIVAL_CART.write(cart); renderCart();
-      });
+      quantityInput.addEventListener("change", () => { const cart = RIVAL_CART.read(); const target = cart.find(entry => entry.sku === item.sku && entry.size === item.size); if (!target) return; target.quantity = Math.max(item.product.moq, Math.floor(Number(quantityInput.value) || item.product.moq)); RIVAL_CART.write(cart); renderCart(); });
       remove.addEventListener("click", () => { const cart = RIVAL_CART.read(); const removeIndex = cart.findIndex(entry => entry.sku === item.sku && entry.size === item.size); if (removeIndex >= 0) cart.splice(removeIndex, 1); RIVAL_CART.write(cart); renderCart(); });
       cartLines.append(row);
     });
     document.getElementById("order-subtotal").textContent = RIVAL_CART.money(currentSubtotal); document.getElementById("order-total").textContent = RIVAL_CART.money(currentSubtotal);
   }
 
-  function buildOrder(reference) {
+  function buildOrder() {
     const customer = Object.fromEntries(new FormData(form).entries());
-    customer.termsAccepted = customer.legalConsent === "accepted";
-    customer.privacyAccepted = customer.legalConsent === "accepted";
-    delete customer.legalConsent;
+    customer.termsAccepted = customer.legalConsent === "accepted"; customer.privacyAccepted = customer.legalConsent === "accepted"; delete customer.legalConsent;
     const items = validLines().map(item => ({ reference: item.product.sku, category: item.product.category, size: item.size, quantity: item.quantity, unitPrice: item.product.price, lineTotal: Number((item.product.price * item.quantity).toFixed(2)) }));
-    return { reference, createdAt: new Date().toISOString(), currency: "EUR", estimatedGoodsTotal: Number(currentSubtotal.toFixed(2)), customer, items };
-  }
-
-  function orderText(order) {
-    const lines = order.items.map((item, i) => `${i + 1}. ${item.reference} | ${item.category} | Size: ${item.size} | Qty: ${item.quantity} | Unit: ${RIVAL_CART.money(item.unitPrice)} | Line: ${RIVAL_CART.money(item.lineTotal)}`);
-    return [`WHOLESALE ORDER REQUEST ${order.reference}`, `Quote request date: ${new Date(order.createdAt).toLocaleDateString("en-GB")}`, "", "CUSTOMER", `Company: ${order.customer.company}`, `Company registration number: ${order.customer.registrationNumber}`, `Contact: ${order.customer.contactName}`, `Email: ${order.customer.email}`, `Telephone: ${order.customer.phone}`, `VAT / tax number: ${order.customer.taxNumber || "Not supplied"}`, `Delivery: ${order.customer.address}, ${order.customer.city}, ${order.customer.postcode}, ${order.customer.country}`, "", "PRODUCTS", ...lines, "", `ESTIMATED GOODS TOTAL: ${RIVAL_CART.money(order.estimatedGoodsTotal)}`, "VAT, taxes, shipping, stock availability and the final payable total remain subject to a confirmed written quotation.", "Terms and Privacy: accepted", "Card details are entered only on REDUNIQ's secure hosted payment page.", "", `Notes: ${order.customer.notes || "None"}`].join("\n");
+    return { createdAt: new Date().toISOString(), currency: "EUR", estimatedGoodsTotal: Number(currentSubtotal.toFixed(2)), customer, items };
   }
 
   function download(order) {
-    const blob = new Blob([orderText(order)], { type: "text/plain;charset=utf-8" }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${order.reference}.txt`; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    const lines = order.items.map((item, index) => `${index + 1}. ${item.reference} | ${item.category} | Size: ${item.size} | Qty: ${item.quantity} | Unit: ${RIVAL_CART.money(item.unitPrice)} | Line: ${RIVAL_CART.money(item.lineTotal)}`);
+    const content = [`WHOLESALE CHECKOUT SUMMARY`, `Created: ${new Date(order.createdAt).toLocaleDateString("en-GB")}`, "", `Company: ${order.customer.company}`, `Registration: ${order.customer.registrationNumber}`, `Contact: ${order.customer.contactName}`, `Email: ${order.customer.email}`, `Delivery: ${order.customer.address}, ${order.customer.city}, ${order.customer.postcode}, ${order.customer.country}`, "", ...lines, "", `GOODS TOTAL: ${RIVAL_CART.money(order.estimatedGoodsTotal)}`, "Tax and delivery are calculated automatically by the secure checkout service."].join("\n");
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "RIVAL-PRAXIS-checkout-summary.txt"; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
 
-  form.addEventListener("submit", event => {
+  form.addEventListener("submit", async event => {
     event.preventDefault(); message.textContent = "";
     if (!form.reportValidity()) return;
-    if (!validLines().length) { message.textContent = "Add at least one product before requesting a quotation."; return; }
-    const order = buildOrder(requestReference()); submitButton.disabled = true; submitButton.textContent = "Sending request…";
-    if (paymentConfig.commerceEnabled === true && /^https:\/\//.test(paymentConfig.apiBase || "")) {
-      const payload = { customer: order.customer, notes: order.customer.notes, items: order.items.map(item => ({ sku: item.reference, name: item.category, size: item.size, quantity: item.quantity, unitPrice: Math.round(item.unitPrice * 100), lineTotal: Math.round(item.lineTotal * 100) })) };
-      fetch(`${paymentConfig.apiBase}/quote/request`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
-        .then(async response => { const data = await response.json(); if (!response.ok) throw new Error(data.message || "Request failed."); return data; })
-        .then(data => { order.reference = data.requestReference; sessionStorage.setItem("rivalPraxisLastOrder", JSON.stringify(order)); download(order); RIVAL_CART.write([]); renderCart(); message.textContent = data.emailDelivery?.customer === "sent" ? `Request ${data.requestReference} was submitted. A confirmation email has been sent.` : `Request ${data.requestReference} was submitted. Please save the downloaded copy; email confirmation is pending.`; })
-        .catch(error => { message.textContent = error.message === "Failed to fetch" ? "The secure request service is temporarily unavailable. Please try again shortly." : error.message; })
-        .finally(() => { submitButton.disabled = false; submitButton.textContent = "Request Confirmed Quote"; });
-    } else {
-      sessionStorage.setItem("rivalPraxisLastOrder", JSON.stringify(order)); download(order);
-      const subject = `Wholesale Order Request - ${order.reference} - ${safe(order.customer.company)}`;
-      window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(orderText(order))}`;
-      message.textContent = `Order ${order.reference} is ready. A copy was downloaded and your email application is opening so you can send it.`;
-      submitButton.disabled = false; submitButton.textContent = "Request Confirmed Quote";
+    if (!validLines().length) { message.textContent = "Add at least one product before checkout."; return; }
+    if (paymentConfig.enabled !== true || paymentConfig.commerceEnabled !== true || !/^https:\/\//.test(paymentConfig.apiBase || "")) { message.textContent = "Secure automated checkout is not active yet."; return; }
+    const order = buildOrder(); submitButton.disabled = true; submitButton.textContent = "Opening secure payment…";
+    const requestKey = sessionStorage.getItem("rivalPraxisCheckoutKey") || checkoutKey(); sessionStorage.setItem("rivalPraxisCheckoutKey", requestKey);
+    const payload = { requestKey, customer: order.customer, notes: order.customer.notes, items: order.items.map(item => ({ sku: item.reference, size: item.size, quantity: item.quantity })) };
+    try {
+      const response = await fetch(`${paymentConfig.apiBase}/order/checkout`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const data = await response.json(); if (!response.ok || !data.redirectUrl || !data.token) throw new Error(data.message || "Checkout could not be started.");
+      sessionStorage.setItem("rivalpraxisPaymentToken", data.token); sessionStorage.setItem("rivalpraxisOrderReference", data.orderReference); sessionStorage.removeItem("rivalPraxisCheckoutKey"); RIVAL_CART.write([]); window.location.assign(data.redirectUrl);
+    } catch (error) {
+      message.textContent = error.message === "Failed to fetch" ? "The secure checkout service is temporarily unavailable. Please try again shortly." : error.message; submitButton.disabled = false; submitButton.textContent = "Pay Securely";
     }
   });
-  downloadButton.addEventListener("click", () => { if (!validLines().length) return; download(buildOrder(requestReference())); message.textContent = "Your order copy has been downloaded."; });
+  downloadButton.addEventListener("click", () => { if (!validLines().length) return; download(buildOrder()); message.textContent = "Your checkout summary has been downloaded."; });
   window.addEventListener("rival-cart-change", renderCart); renderCart();
 })();

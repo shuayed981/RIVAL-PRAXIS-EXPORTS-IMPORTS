@@ -22,13 +22,14 @@
       card.className = "status-card success";
       icon.textContent = "\u2713";
       title.textContent = "Payment confirmed";
-      message.textContent = "Thank you. Your payment has been securely verified and linked to your quotation.";
-      document.getElementById("status-reference").textContent = data.quoteReference;
+      message.textContent = "Thank you. Your payment was verified, your receipt was generated, and your order entered fulfilment automatically.";
+      document.getElementById("status-reference").textContent = data.orderReference;
+      document.getElementById("status-receipt").textContent = data.receiptReference;
       document.getElementById("status-transaction").textContent = data.transactionId;
       document.getElementById("status-amount").textContent = money(data.total, data.currency);
       details.hidden = false;
       paymentProof.hidden = false;
-      sessionStorage.removeItem("rivalpraxisQuoteReference");
+      sessionStorage.removeItem("rivalpraxisOrderReference");
     })
     .catch(error => showError(error.message === "Failed to fetch" ? "The verification service is temporarily unavailable. Do not pay again. Contact payment support with your quotation reference." : error.message));
 

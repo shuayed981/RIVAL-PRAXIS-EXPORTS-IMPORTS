@@ -1,4 +1,4 @@
-import { createQuoteRequest, publicQuoteByToken, acceptQuote, adminList, adminCreateQuote, adminUpdateOrder, markOrderPayment, markOrderPaymentPending } from "./commerce-service.js";
+import { createAutomaticOrder, createQuoteRequest, publicQuoteByToken, acceptQuote, adminList, adminCreateQuote, adminUpdateOrder, markOrderPayment, markOrderPaymentPending, ensurePaymentReceipt } from "./commerce-service.js";
 import { sendEmail, merchantEmail } from "./email-service.js";
 
 const gatewayEndpoint = (env) => {
@@ -117,7 +117,7 @@ async function getApprovedQuote(env, quoteReference, email) {
   return { ...buyer, quoteReference: reference, firstName: names.shift() || "Buyer", lastName: names.join(" ") || "Contact",
     email: row.customer_email, phone: buyer.phone, items: JSON.parse(row.items_json).map(line => ({ name: line.name, sku: line.sku, amount: line.lineTotal, tax: line.tax, taxRate: line.taxRate, quantity: line.quantity })),
     subtotal: row.subtotal, tax: row.tax, shipping: row.shipping, total: row.total, currency: row.currency, expiresAt: row.expires_at,
-    billing: address, shippingAddress: address, tin: buyer.taxNumber, paymentStatus: row.payment_status === "paid" ? "paid" : "unpaid" };
+    billing: address, shippingAddress: address, tin: buyer.taxNumber, paymentStatus: ["paid", "processing", "shipped", "delivered"].includes(row.payment_status) ? "paid" : "unpaid" };
 }
 
 async function gateway(env, payload) {
@@ -221,6 +221,19 @@ async function initPayment(request, env, origin) {
   return json({ token: result.token, redirectUrl: result.redirectUrl }, 200, origin);
 }
 
+async function automaticCheckout(request, env, origin) {
+  assertPaymentConfiguration(env);
+  if (!commerceEnabled(env)) return json({ message: "Automated checkout is not active yet." }, 503, origin);
+  if (!(await enforceRateLimit(request, env, "checkout"))) return json({ message: "Too many checkout attempts. Wait 15 minutes before trying again." }, 429, origin);
+  const order = await createAutomaticOrder(env, await bodyOf(request));
+  const quote = await getApprovedQuote(env, order.quoteReference, order.customerEmail);
+  if (!quote) throw new Error("The automated order could not be loaded");
+  const paymentRequest = new Request(request.url, { method: "POST", headers: request.headers, body: JSON.stringify({ quoteReference: order.quoteReference, email: order.customerEmail }) });
+  const response = await initPayment(paymentRequest, env, origin);
+  const data = await response.json();
+  return json({ ...data, orderReference: order.orderReference }, response.status, origin);
+}
+
 async function verifyToken(env, token) {
   const normalizedToken = normalize(token, 80);
   const row = await env.INVOICES_DB.prepare(`SELECT quote_reference,total,currency,redirect_url,status,expires_at
@@ -248,9 +261,11 @@ async function verifyToken(env, token) {
     if (quote) {
       const order = await markOrderPayment(env, session.quoteReference, transactionId);
       if (order) {
-        await sendEmail(env, { key: `payment-customer-${transactionId}`, to: order.customer_email, subject: `Payment confirmed - ${order.order_reference}`, heading: "Payment confirmed", body: `<p>We securely confirmed payment of <b>${escapeHtml(amountText(session.total, session.currency))}</b> for order <b>${escapeHtml(order.order_reference)}</b>.</p><p>Quotation: <b>${escapeHtml(session.quoteReference)}</b><br>Transaction: <b>${escapeHtml(transactionId)}</b></p><p>Your official invoice will be prepared separately by our accounting team and sent to your billing email.</p>` });
-        await sendEmail(env, { key: `payment-merchant-${transactionId}`, to: merchantEmail(env), subject: `Payment received - ${order.order_reference} - manual invoice required`, heading: "Payment received", body: `<p>Order <b>${escapeHtml(order.order_reference)}</b> and quotation <b>${escapeHtml(session.quoteReference)}</b> have been paid.</p><p>Transaction: <b>${escapeHtml(transactionId)}</b></p>${accountingSummary(quote)}<p><b>Action required:</b> forward these details to the accountant for manual invoicing in AT-certified software.</p>` });
-        await audit(env, session.quoteReference, "manual_invoice_required", { orderReference: order.order_reference, transactionId });
+        const receipt = await ensurePaymentReceipt(env, order, quote, transactionId);
+        await Promise.all([
+          sendEmail(env, { key: `payment-customer-${transactionId}`, to: order.customer_email, subject: `Payment confirmed - ${order.order_reference}`, heading: "Payment confirmed", body: `<p>We securely confirmed payment of <b>${escapeHtml(amountText(session.total, session.currency))}</b> for order <b>${escapeHtml(order.order_reference)}</b>.</p><p>Receipt: <b>${escapeHtml(receipt.receipt_reference)}</b><br>Transaction: <b>${escapeHtml(transactionId)}</b></p><p>Your order has automatically entered fulfilment.</p>` }),
+          sendEmail(env, { key: `fulfillment-${transactionId}`, to: merchantEmail(env), subject: `Fulfilment started - ${order.order_reference}`, heading: "Paid order ready for fulfilment", body: `<p>Order <b>${escapeHtml(order.order_reference)}</b> was verified and moved automatically to processing.</p><p>Receipt: <b>${escapeHtml(receipt.receipt_reference)}</b><br>Transaction: <b>${escapeHtml(transactionId)}</b></p>${accountingSummary(quote)}` })
+        ]);
       }
     }
   }
@@ -266,7 +281,9 @@ async function paymentResult(request, env, origin) {
     await audit(env, verified.session.quoteReference, "payment_not_confirmed", { transactionStatus: Number(verified.result?.transaction?.status) || null, resultCode: normalize(verified.result?.result?.code, 30) });
     return json({ status: "not_paid", message: "REDUNIQ has not confirmed this payment. Do not submit another payment until support checks the transaction." }, 409, origin);
   }
-  return json({ status: "paid", quoteReference: verified.session.quoteReference, transactionId: normalize(verified.result?.transaction?.id, 50), total: verified.session.total, currency: verified.session.currency, invoicing: "manual" }, 200, origin);
+  const order = await env.INVOICES_DB.prepare("SELECT order_reference,status FROM orders WHERE quote_reference=?1").bind(verified.session.quoteReference).first();
+  const receipt = await env.INVOICES_DB.prepare("SELECT receipt_reference,issued_at FROM payment_receipts WHERE transaction_id=?1").bind(normalize(verified.result?.transaction?.id, 80)).first();
+  return json({ status: "paid", orderReference: order?.order_reference, orderStatus: order?.status, receiptReference: receipt?.receipt_reference, receiptIssuedAt: receipt?.issued_at, transactionId: normalize(verified.result?.transaction?.id, 50), total: verified.session.total, currency: verified.session.currency }, 200, origin);
 }
 
 async function notification(request, env, origin) {
@@ -320,6 +337,7 @@ export default {
       if (path === "/api/quote/request") return await quoteRequest(request, env, origin);
       if (path === "/api/quote/view") return await quoteView(request, env, origin);
       if (path === "/api/quote/accept") return await quoteAccept(request, env, origin);
+      if (path === "/api/order/checkout") return await automaticCheckout(request, env, origin);
       if (path === "/api/payment/init") return await initPayment(request, env, origin);
       if (path === "/api/payment/result") return await paymentResult(request, env, origin);
       if (path === "/api/payment/notification") return await notification(request, env, origin);

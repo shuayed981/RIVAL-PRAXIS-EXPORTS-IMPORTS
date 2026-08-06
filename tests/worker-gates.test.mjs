@@ -26,6 +26,12 @@ test("commerce endpoints fail closed before activation", async () => {
   assert.deepEqual(await response.json(), { message: "Online quotation requests are not active yet." });
 });
 
+test("automated checkout fails closed before activation", async () => {
+  const response = await worker.fetch(request("/api/order/checkout"), env);
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { message: "Online payments are not active yet." });
+});
+
 test("untrusted browser origins are rejected", async () => {
   const response = await worker.fetch(request("/api/payment/init", "https://attacker.invalid"), env);
   assert.equal(response.status, 403);

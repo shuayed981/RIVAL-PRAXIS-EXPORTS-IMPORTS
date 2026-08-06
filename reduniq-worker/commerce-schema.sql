@@ -92,6 +92,19 @@ CREATE TABLE IF NOT EXISTS email_events (
   created_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS payment_receipts (
+  id TEXT PRIMARY KEY,
+  receipt_reference TEXT NOT NULL UNIQUE,
+  order_reference TEXT NOT NULL,
+  transaction_id TEXT NOT NULL UNIQUE,
+  customer_email TEXT NOT NULL,
+  total INTEGER NOT NULL CHECK (total >= 100),
+  currency TEXT NOT NULL DEFAULT 'EUR',
+  receipt_json TEXT NOT NULL,
+  issued_at TEXT NOT NULL,
+  FOREIGN KEY (order_reference) REFERENCES orders(order_reference)
+);
+
 CREATE INDEX IF NOT EXISTS quote_requests_email_idx ON quote_requests(customer_email);
 CREATE INDEX IF NOT EXISTS commerce_quotes_request_idx ON commerce_quotes(request_id);
 CREATE INDEX IF NOT EXISTS orders_status_idx ON orders(status);
@@ -99,3 +112,4 @@ CREATE INDEX IF NOT EXISTS commerce_events_entity_idx ON commerce_events(entity_
 CREATE INDEX IF NOT EXISTS payment_sessions_quote_idx ON payment_sessions(quote_reference, status, expires_at);
 CREATE UNIQUE INDEX IF NOT EXISTS payment_sessions_one_pending_per_quote_idx ON payment_sessions(quote_reference) WHERE status='pending';
 CREATE INDEX IF NOT EXISTS api_rate_limits_expiry_idx ON api_rate_limits(expires_at);
+CREATE INDEX IF NOT EXISTS payment_receipts_order_idx ON payment_receipts(order_reference);
