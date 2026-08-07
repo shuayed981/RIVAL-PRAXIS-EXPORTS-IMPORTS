@@ -23,43 +23,32 @@
     <section class="payment-intro">
       <p class="eyebrow">Secure wholesale payments</p>
       <h1>Pay an Approved Quote</h1>
-      <p>Use the quotation reference and billing email shown on your approved RIVAL PRAXIS quotation. Your payable amount is retrieved securely and cannot be changed in the browser.</p>
-      <div class="activation-notice" role="status"><strong>REDUNIQ / Getnet hosted checkout is prepared and awaiting merchant activation.</strong> Until a provider account is activated, request verified payment instructions from <a href="mailto:rivalpraxisunipessoallda@gmail.com?subject=Approved%20Quotation%20Payment">payment support</a>.</div>
+      <p>Use the official REDUNIQ secure payment page to pay an approved RIVAL PRAXIS quotation. Have your quotation reference and exact approved total ready before continuing.</p>
+      <div class="activation-notice payment-live-notice" role="status"><strong>Secure REDUNIQ payment is available.</strong> You will complete payment on the REDUNIQ website.</div>
     </section>
     <section class="payment-shell">
       <div class="payment-form-card">
-        <div class="step-label"><span>01</span> Find your quotation</div>
-        <form id="quote-lookup-form" novalidate>
-          <label for="quote-reference">Quotation reference</label>
-          <input id="quote-reference" name="quoteReference" autocomplete="off" maxlength="50" placeholder="Example: RP-2026-00124" required>
-          <label for="billing-email">Billing email</label>
-          <input id="billing-email" name="email" type="email" autocomplete="email" maxlength="150" placeholder="name@company.com" required>
-          <button class="btn payment-submit" type="submit">Retrieve Secure Total</button>
-          <p class="form-message" id="lookup-message" role="status" aria-live="polite"></p>
-        </form>
-        <div id="quote-summary" class="quote-summary" hidden>
-          <div class="step-label"><span>02</span> Review and pay</div>
-          <dl>
-            <div><dt>Quotation</dt><dd id="summary-reference"></dd></div>
-            <div><dt>Company</dt><dd id="summary-company"></dd></div>
-            <div><dt>Goods</dt><dd id="summary-subtotal"></dd></div>
-            <div><dt>VAT / taxes</dt><dd id="summary-tax"></dd></div>
-            <div><dt>Shipping</dt><dd id="summary-shipping"></dd></div>
-            <div class="summary-total"><dt>Total payable</dt><dd id="summary-total"></dd></div>
-          </dl>
-          <label class="payment-consent"><input id="accept-terms" type="checkbox"> <span>I confirm that I am authorized to pay for this business and accept the <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms</a>, <a href="payments.html" target="_blank" rel="noopener noreferrer">Payment Policy</a>, and <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</span></label>
-          <button class="btn payment-submit" id="start-payment" type="button" disabled>Continue to Secure Payment</button>
-          <p class="form-message" id="payment-message" role="status" aria-live="polite"></p>
+        <div class="step-label"><span>01</span> Check your approved quotation</div>
+        <div class="reduniq-handoff">
+          <h2>Continue to REDUNIQ</h2>
+          <p>Only continue if RIVAL PRAXIS has issued your approved quotation or invoice. On the REDUNIQ page, enter the exact reference and amount shown on that document.</p>
+          <ul>
+            <li>Confirm the beneficiary is RIVAL PRAXIS.</li>
+            <li>Check the amount and currency before authorising payment.</li>
+            <li>Keep the REDUNIQ receipt for your records.</li>
+          </ul>
+          <a class="btn payment-submit reduniq-payment-link" href="https://pagamentos.reduniq.pt/pay-by-link/3216895/rivalpraxis/" target="_blank" rel="noopener noreferrer external">Pay Securely with REDUNIQ</a>
+          <p class="payment-fallback">If the payment page does not open, <a href="https://pagamentos.reduniq.pt/pay-by-link/3216895/rivalpraxis/" target="_blank" rel="noopener noreferrer external">open REDUNIQ here</a> or contact <a href="mailto:rivalpraxisunipessoallda@gmail.com?subject=REDUNIQ%20Payment%20Support">payment support</a>.</p>
         </div>
       </div>
       <aside class="payment-assurance">
         <p class="eyebrow">Before you pay</p>
         <h2>Protected Payment Process</h2>
         <ul>
-          <li>Your quotation total is verified by our secure payment service.</li>
-          <li>Payment details are entered only on the activated REDUNIQ or Getnet hosted checkout.</li>
+          <li>Use only the reference and exact total on your approved quotation or invoice.</li>
+          <li>Payment details are entered only on REDUNIQ's hosted payment page.</li>
           <li>RIVAL PRAXIS does not receive or store your full card details.</li>
-          <li>You receive a clear success or error result after payment verification.</li>
+          <li>Your order is confirmed after RIVAL PRAXIS verifies the cleared payment.</li>
         </ul>
         <div class="merchant-details"><strong>Merchant</strong><span>RIVAL PRAXIS UNIPESSOAL LDA</span><span>NIF 519497074</span><span>Rua de Manhica, 446 R/C, 1800-245 Lisboa, Portugal</span><span>+351 920 020 495</span></div>
       </aside>
@@ -67,7 +56,5 @@
   </main>
   <footer><p>&copy; 2026 RIVAL PRAXIS UNIPESSOAL LDA &bull; NIF/NIPC: 519497074</p><p><a href="merchant-information.html">Merchant Information</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns</a><a href="payments.html">Payments</a></p></footer>
   <script src="script.js?v=20260803-reviewfix"></script>
-  <script src="payment-config.js?v=20260803-reviewfix"></script>
-  <script src="payment.js"></script>
 </body>
 </html>
