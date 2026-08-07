@@ -113,3 +113,42 @@ CREATE INDEX IF NOT EXISTS payment_sessions_quote_idx ON payment_sessions(quote_
 CREATE UNIQUE INDEX IF NOT EXISTS payment_sessions_one_pending_per_quote_idx ON payment_sessions(quote_reference) WHERE status='pending';
 CREATE INDEX IF NOT EXISTS api_rate_limits_expiry_idx ON api_rate_limits(expires_at);
 CREATE INDEX IF NOT EXISTS payment_receipts_order_idx ON payment_receipts(order_reference);
+
+CREATE TABLE IF NOT EXISTS payment_transactions (
+  id TEXT PRIMARY KEY,
+  record_reference TEXT NOT NULL UNIQUE,
+  order_reference TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  provider_transaction_id TEXT NOT NULL UNIQUE,
+  total INTEGER NOT NULL CHECK (total >= 100),
+  currency TEXT NOT NULL DEFAULT 'EUR',
+  status TEXT NOT NULL CHECK (status IN ('paid','failed','refunded')),
+  provider_record_json TEXT NOT NULL,
+  confirmation_html TEXT NOT NULL,
+  verified_at TEXT NOT NULL,
+  FOREIGN KEY (order_reference) REFERENCES orders(order_reference)
+);
+
+CREATE INDEX IF NOT EXISTS payment_transactions_order_idx ON payment_transactions(order_reference);
+
+CREATE TABLE IF NOT EXISTS payment_attempts (
+  id TEXT PRIMARY KEY,
+  attempt_reference TEXT NOT NULL UNIQUE,
+  token_hash TEXT NOT NULL UNIQUE,
+  order_reference TEXT NOT NULL,
+  quote_reference TEXT NOT NULL,
+  total INTEGER NOT NULL CHECK (total >= 100),
+  currency TEXT NOT NULL DEFAULT 'EUR',
+  status TEXT NOT NULL CHECK (status IN ('initialized','unconfirmed','failed','canceled','paid')),
+  result_code TEXT,
+  transaction_status INTEGER,
+  provider_message TEXT,
+  transaction_id TEXT,
+  verification_count INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  finalized_at TEXT,
+  FOREIGN KEY (order_reference) REFERENCES orders(order_reference)
+);
+
+CREATE INDEX IF NOT EXISTS payment_attempts_order_idx ON payment_attempts(order_reference, created_at);

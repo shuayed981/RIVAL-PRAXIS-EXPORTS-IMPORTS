@@ -67,15 +67,15 @@ function checkoutRule(env, country) {
   const code = countryCode(country).toUpperCase();
   const rule = rules[code];
   if (!rule) throw new Error(`Automated checkout is not available for ${clean(country, 60)}`);
-  const taxRateBps = Number(rule.taxRateBps); const shipping = Number(rule.shipping);
-  if (!Number.isSafeInteger(taxRateBps) || taxRateBps < 0 || taxRateBps > 10000 || !Number.isSafeInteger(shipping) || shipping < 0) throw new Error("Automated checkout pricing rules are invalid");
-  return { code, taxRateBps, shipping };
+  const taxRateBps = Number(rule.taxRateBps);
+  if (!Number.isSafeInteger(taxRateBps) || taxRateBps < 0 || taxRateBps > 10000) throw new Error("Automated checkout pricing rules are invalid");
+  return { code, taxRateBps };
 }
 
 export async function createAutomaticOrder(env, input) {
   if (!env.INVOICES_DB) throw new Error("Commerce database is not configured");
   const buyer = customer(input.customer || {}); const lines = priceCart(input.items);
-  if (!buyer.company || !buyer.registrationNumber || !buyer.contactName || !buyer.phone || !buyer.city || !buyer.postcode || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyer.email) || !buyer.address) throw new Error("Complete company, billing and delivery details are required");
+  if (!buyer.company || !buyer.registrationNumber || !buyer.contactName || !buyer.phone || !buyer.city || !buyer.postcode || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyer.email) || !buyer.address) throw new Error("Complete company and billing details are required");
   if (!buyer.termsAccepted || !buyer.privacyAccepted) throw new Error("Terms and Privacy acceptance is required");
   const requestKey = clean(input.requestKey, 100);
   if (!/^[A-Za-z0-9_-]{20,100}$/.test(requestKey)) throw new Error("A valid checkout request key is required");
@@ -85,8 +85,8 @@ export async function createAutomaticOrder(env, input) {
   const rule = checkoutRule(env, buyer.country);
   const subtotal = lines.reduce((sum, line) => sum + line.lineTotal, 0);
   const tax = Math.round(subtotal * rule.taxRateBps / 10000);
-  const shipping = rule.shipping; const total = subtotal + tax + shipping;
-  if (![subtotal, tax, shipping, total].every(Number.isSafeInteger) || total < 100) throw new Error("Order total is invalid");
+  const shipping = 0; const total = subtotal + tax;
+  if (![subtotal, tax, total].every(Number.isSafeInteger) || total < 100) throw new Error("Order total is invalid");
   const pricedLines = lines.map(line => ({ ...line, tax: Math.round(line.lineTotal * rule.taxRateBps / 10000), taxRate: rule.taxRateBps / 100 }));
   const taxDifference = tax - pricedLines.reduce((sum, line) => sum + line.tax, 0);
   pricedLines[pricedLines.length - 1].tax += taxDifference;
@@ -162,31 +162,4 @@ export async function adminUpdateOrder(env, input) {
   await event(env, "order", row.id, `status_${status}`, { trackingReference: clean(input.trackingReference, 120) });
   await sendEmail(env, { key: `order-${row.id}-${status}`, to: row.customer_email, subject: `Order ${row.order_reference}: ${status}`, heading: "Order update", body: `<p>Your order <b>${row.order_reference}</b> is now <b>${status}</b>.</p>${input.trackingReference ? `<p>Tracking reference: <b>${html(clean(input.trackingReference, 120))}</b></p>` : ""}` });
   return { orderReference: row.order_reference, status };
-}
-
-export async function markOrderPayment(env, quoteReference, transactionId) {
-  if (!env.INVOICES_DB) return null; const at = now();
-  const row = await env.INVOICES_DB.prepare("SELECT * FROM orders WHERE quote_reference=?1").bind(quoteReference).first();
-  if (!row) return null;
-  const result = await env.INVOICES_DB.prepare("UPDATE orders SET status='processing',transaction_id=?1,paid_at=COALESCE(paid_at,?2),updated_at=?2 WHERE id=?3 AND status IN ('awaiting_payment','payment_pending','paid')").bind(transactionId, at, row.id).run();
-  if (!result.meta?.changes && !["paid", "processing", "shipped", "delivered"].includes(row.status)) return null;
-  await env.INVOICES_DB.prepare("UPDATE commerce_quotes SET status='paid',updated_at=?1 WHERE quote_reference=?2").bind(at, quoteReference).run();
-  await event(env, "order", row.id, "payment_confirmed", { transactionId });
-  await event(env, "order", row.id, "fulfillment_triggered", { transactionId, status: "processing" });
-  return { ...row, status: "processing", transaction_id: transactionId, paid_at: row.paid_at || at };
-}
-
-export async function ensurePaymentReceipt(env, order, quote, transactionId) {
-  const existing = await env.INVOICES_DB.prepare("SELECT * FROM payment_receipts WHERE transaction_id=?1").bind(transactionId).first();
-  if (existing) return existing;
-  const id = crypto.randomUUID(); const receiptReference = ref("RP-RCPT"); const issuedAt = now();
-  await env.INVOICES_DB.prepare(`INSERT OR IGNORE INTO payment_receipts(id,receipt_reference,order_reference,transaction_id,customer_email,total,currency,receipt_json,issued_at)
-    VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9)`).bind(id, receiptReference, order.order_reference, transactionId, order.customer_email, quote.total, quote.currency, json({ receiptReference, orderReference: order.order_reference, transactionId, customer: quote.company, total: quote.total, currency: quote.currency, issuedAt }), issuedAt).run();
-  await event(env, "order", order.id, "receipt_generated", { receiptReference, transactionId });
-  return await env.INVOICES_DB.prepare("SELECT * FROM payment_receipts WHERE transaction_id=?1").bind(transactionId).first();
-}
-
-export async function markOrderPaymentPending(env, quoteReference) {
-  if (!env.INVOICES_DB) return;
-  await env.INVOICES_DB.prepare("UPDATE orders SET status='payment_pending',updated_at=?1 WHERE quote_reference=?2 AND status='awaiting_payment'").bind(now(), quoteReference).run();
 }

@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Secure payment portal for approved RIVAL PRAXIS wholesale quotations.">
+  <meta name="description" content="Secure REDUNIQ hosted payment portal for RIVAL PRAXIS customers.">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="96x96" href="favicon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <title>Pay an Approved Quote | RIVAL PRAXIS</title>
+  <title>Secure Payment | RIVAL PRAXIS</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="payment.css">
 </head>
@@ -22,19 +22,20 @@
   <main class="payment-main">
     <section class="payment-intro">
       <p class="eyebrow">Secure wholesale payments</p>
-      <h1>Pay an Approved Quote</h1>
-      <p>Use the official REDUNIQ secure payment page to pay an approved RIVAL PRAXIS quotation. Have the billing email and exact approved total ready before continuing.</p>
+      <h1>Pay Securely with REDUNIQ</h1>
+      <p>Use the official REDUNIQ secure payment page. Have the payer's billing email and exact payment amount ready before continuing.</p>
       <div class="activation-notice payment-live-notice" role="status"><strong>Secure REDUNIQ payment is available.</strong> You will complete payment on the REDUNIQ website.</div>
     </section>
     <section class="payment-shell">
       <div class="payment-form-card">
-        <div class="step-label"><span>01</span> Check your approved quotation</div>
+        <div class="step-label"><span>01</span> Check your payment amount</div>
         <div class="reduniq-handoff">
           <h2>Continue to REDUNIQ</h2>
-          <p>Only continue if RIVAL PRAXIS has issued your approved quotation or payment instructions. On the REDUNIQ page, enter the payer's name, the same billing email, and the exact amount shown on the approved document.</p>
+          <p>On the REDUNIQ page, enter the payer's name, billing email and exact amount shown in your checkout summary or payment instructions.</p>
+          <p id="hosted-order-total" class="activation-notice" hidden></p>
           <ul>
             <li>Use the billing email associated with your order.</li>
-            <li>Enter the exact approved amount in euros and check it before authorising payment.</li>
+            <li>Enter the exact amount in euros and check it before authorising payment.</li>
             <li>Keep the REDUNIQ receipt for your records.</li>
           </ul>
           <a class="btn payment-submit reduniq-payment-link" href="https://pagamentos.reduniq.pt/pay-by-link/3216895/rivalpraxis" target="_blank" rel="noopener noreferrer external">Pay Securely with REDUNIQ</a>
@@ -45,7 +46,7 @@
         <p class="eyebrow">Before you pay</p>
         <h2>Protected Payment Process</h2>
         <ul>
-          <li>Use the billing email and exact total from your approved payment instructions.</li>
+          <li>Use the billing email and exact total from your checkout summary or payment instructions.</li>
           <li>Payment details are entered only on REDUNIQ's hosted payment page.</li>
           <li>RIVAL PRAXIS does not receive or store your full card details.</li>
           <li>Your order is confirmed after RIVAL PRAXIS verifies the cleared payment.</li>
@@ -55,6 +56,16 @@
     </section>
   </main>
   <footer><p>&copy; 2026 RIVAL PRAXIS UNIPESSOAL LDA &bull; NIF/NIPC: 519497074</p><p><a href="merchant-information.html">Merchant Information</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns</a><a href="payments.html">Payments</a></p></footer>
-  <script src="script.js?v=20260803-reviewfix"></script>
+  <script src="script.js?v=20260807-production-audit"></script>
+  <script>
+    (() => {
+      const amount = Number(sessionStorage.getItem("rivalpraxisHostedGoodsTotal"));
+      const note = document.getElementById("hosted-order-total");
+      if (Number.isFinite(amount) && amount > 0) {
+        note.textContent = `Your cart goods total is ${new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(amount)}. Confirm this amount before paying.`;
+        note.hidden = false;
+      }
+    })();
+  </script>
 </body>
 </html>

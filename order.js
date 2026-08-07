@@ -48,7 +48,7 @@
 
   function download(order) {
     const lines = order.items.map((item, index) => `${index + 1}. ${item.reference} | ${item.category} | Size: ${item.size} | Qty: ${item.quantity} | Unit: ${RIVAL_CART.money(item.unitPrice)} | Line: ${RIVAL_CART.money(item.lineTotal)}`);
-    const content = [`WHOLESALE CHECKOUT SUMMARY`, `Created: ${new Date(order.createdAt).toLocaleDateString("en-GB")}`, "", `Company: ${order.customer.company}`, `Registration: ${order.customer.registrationNumber}`, `Contact: ${order.customer.contactName}`, `Email: ${order.customer.email}`, `Delivery: ${order.customer.address}, ${order.customer.city}, ${order.customer.postcode}, ${order.customer.country}`, "", ...lines, "", `GOODS TOTAL: ${RIVAL_CART.money(order.estimatedGoodsTotal)}`, "Tax and delivery are calculated automatically by the secure checkout service."].join("\n");
+    const content = [`WHOLESALE CHECKOUT SUMMARY`, `Created: ${new Date(order.createdAt).toLocaleDateString("en-GB")}`, "", `Company: ${order.customer.company}`, `Registration: ${order.customer.registrationNumber}`, `Contact: ${order.customer.contactName}`, `Email: ${order.customer.email}`, `Billing address: ${order.customer.address}, ${order.customer.city}, ${order.customer.postcode}, ${order.customer.country}`, "", ...lines, "", `GOODS TOTAL: ${RIVAL_CART.money(order.estimatedGoodsTotal)}`, "Tax is calculated automatically by the secure checkout service."].join("\n");
     const blob = new Blob([content], { type: "text/plain;charset=utf-8" }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "RIVAL-PRAXIS-checkout-summary.txt"; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
 
@@ -56,8 +56,18 @@
     event.preventDefault(); message.textContent = "";
     if (!form.reportValidity()) return;
     if (!validLines().length) { message.textContent = "Add at least one product before checkout."; return; }
-    if (paymentConfig.enabled !== true || paymentConfig.commerceEnabled !== true || !/^https:\/\//.test(paymentConfig.apiBase || "")) { message.textContent = "Secure automated checkout is not active yet."; return; }
     const order = buildOrder(); submitButton.disabled = true; submitButton.textContent = "Opening secure payment…";
+    if (paymentConfig.enabled !== true || paymentConfig.commerceEnabled !== true || !/^https:\/\//.test(paymentConfig.apiBase || "")) {
+      if (paymentConfig.mode === "hosted-link" && paymentConfig.hostedPage === "pay.html") {
+        sessionStorage.setItem("rivalpraxisHostedGoodsTotal", String(order.estimatedGoodsTotal));
+        window.location.assign(paymentConfig.hostedPage);
+        return;
+      }
+      message.textContent = "Secure payment is not active yet.";
+      submitButton.disabled = false;
+      submitButton.textContent = "Continue to Secure Payment";
+      return;
+    }
     const requestKey = sessionStorage.getItem("rivalPraxisCheckoutKey") || checkoutKey(); sessionStorage.setItem("rivalPraxisCheckoutKey", requestKey);
     const payload = { requestKey, customer: order.customer, notes: order.customer.notes, items: order.items.map(item => ({ sku: item.reference, size: item.size, quantity: item.quantity })) };
     try {

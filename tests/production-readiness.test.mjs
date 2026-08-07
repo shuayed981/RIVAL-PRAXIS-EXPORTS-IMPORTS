@@ -51,35 +51,44 @@ test("payments and commerce fail closed before activation", () => {
 });
 
 test("payment success is server verified and exact-amount checked", () => {
-  const worker = read("reduniq-worker/worker.js");
-  assert.match(worker, /transaction\?\.status\) === 4/);
-  assert.match(worker, /resultCode === "00000000"/);
-  assert.match(worker, /gatewayAmount === session\.total/);
-  assert.match(worker, /Boolean\(transactionId\)/);
-  assert.match(worker, /SHIPPING_ADDRESS_REQUIRED/);
-  assert.match(worker, /amount: quote\.subtotal, tax: quote\.tax, quantity: 1/);
+  const provider = read("reduniq-worker/reduniq-provider.js");
+  assert.match(provider, /transactionStatus === 4/);
+  assert.doesNotMatch(provider, /resultCode === "00000000"/);
+  assert.match(provider, /gatewayAmount === expectedAmount/);
+  assert.match(provider, /Boolean\(transactionId\)/);
+  assert.match(provider, /amount: quote\.subtotal, tax: quote\.tax, quantity: 1/);
 });
 
 test("payment state, rate limits, and audits use D1 rather than public KV", () => {
-  const worker = read("reduniq-worker/worker.js");
-  assert.doesNotMatch(worker, /env\.QUOTES/);
-  assert.match(worker, /payment_sessions/);
-  assert.match(worker, /api_rate_limits/);
-  assert.match(worker, /commerce_events/);
+  const services = read("reduniq-worker/payment-service.js") + read("reduniq-worker/worker-runtime.js");
+  assert.doesNotMatch(services, /env\.QUOTES/);
+  assert.match(services, /payment_sessions/);
+  assert.match(services, /api_rate_limits/);
+  assert.match(services, /commerce_events/);
 });
 
-test("payment receipt, notifications and fulfilment are automatic after verification", () => {
-  const worker = read("reduniq-worker/worker.js");
-  const commerce = read("reduniq-worker/commerce-service.js");
+test("payment transaction, notifications and paid status are automatic after verification", () => {
+  const payment = read("reduniq-worker/payment-service.js");
+  const records = read("reduniq-worker/payment-record-service.js");
+  const orders = read("reduniq-worker/order-payment-service.js");
   const statusPage = read("payment-status.html");
-  assert.match(worker, /ensurePaymentReceipt/);
-  assert.match(worker, /fulfillment-/);
-  assert.match(commerce, /receipt_generated/);
-  assert.match(commerce, /fulfillment_triggered/);
-  assert.match(commerce, /status='processing'/);
-  assert.doesNotMatch(`${worker}${statusPage}`, /manual invoice|required.*manual|prepared manually/i);
-  assert.match(statusPage, /automatically generated payment receipt/i);
-  assert.match(statusPage, /Print payment confirmation/);
+  assert.match(payment, /ensurePaymentTransaction/);
+  assert.match(records, /payment_recorded/);
+  assert.match(orders, /status='paid'/);
+  assert.doesNotMatch(`${payment}${statusPage}`, /fulfillment_triggered|fulfilment started|tax invoice/i);
+  assert.match(statusPage, /payment-status record/i);
+  assert.match(statusPage, /Download payment confirmation/);
+});
+
+test("automatic payment path excludes delivery and invoicing logic", () => {
+  const orderPage = read("order.html");
+  const provider = read("reduniq-worker/reduniq-provider.js");
+  const payment = read("reduniq-worker/payment-service.js");
+  const commerce = read("reduniq-worker/commerce-service.js");
+  assert.match(orderPage, /Company and billing details/);
+  assert.doesNotMatch(orderPage, /Delivery address|Shipping.*Calculated automatically/i);
+  assert.doesNotMatch(`${provider}${payment}`, /buyer\.shipping|SHIPPING_ADDRESS_REQUIRED|fulfillment_triggered/i);
+  assert.doesNotMatch(commerce, /status='processing'.*transaction_id|fulfillment_triggered/i);
 });
 
 test("billing and quotation records include the required business and legal fields", () => {
@@ -98,15 +107,23 @@ test("billing and quotation records include the required business and legal fiel
   assert.doesNotMatch(`${orderPage}${quotePage}${read("pay.html")}`, /type="(?:text|password)"[^>]*(?:card|cvv|cvc)|name="(?:card|cvv|cvc)/i);
 });
 
-test("normal checkout bypasses quotation request, review, acceptance and lookup", () => {
+test("checkout uses the current hosted-link fallback without quotation lookup", () => {
   const orderPage = read("order.html");
   const orderScript = read("order.js");
+  const hostedPaymentPage = read("pay.html");
+  const browserConfig = read("payment-config.js");
   const worker = read("reduniq-worker/worker.js");
   const commerce = read("reduniq-worker/commerce-service.js");
   assert.match(orderScript, /\/order\/checkout/);
+  assert.match(orderScript, /rivalpraxisHostedGoodsTotal/);
   assert.doesNotMatch(orderScript, /\/quote\/request|mailto:|Request Confirmed Quote/);
   assert.doesNotMatch(orderPage, /Pay a Quote|confirmed quotation/i);
-  assert.match(orderPage, /No quotation or staff approval is required/i);
+  assert.match(orderPage, /REDUNIQ hosted payment is available/i);
+  assert.doesNotMatch(orderPage, /Fully automated checkout/i);
+  assert.match(browserConfig, /mode:\s*"hosted-link"/);
+  assert.match(browserConfig, /hostedPage:\s*"pay\.html"/);
+  assert.match(hostedPaymentPage, /\.format\(amount\)/);
+  assert.doesNotMatch(hostedPaymentPage, /amount\s*\/\s*100|cents\s*\/\s*100/);
   assert.match(worker, /automaticCheckout/);
   assert.match(commerce, /createAutomaticOrder/);
 });
@@ -144,4 +161,58 @@ test("automatic payment receipts are tracked in a deployment migration", () => {
   const migration = read("reduniq-worker/migrations/0002-automatic-checkout.sql");
   assert.match(migration, /CREATE TABLE IF NOT EXISTS payment_receipts/);
   assert.match(migration, /transaction_id TEXT NOT NULL UNIQUE/);
+});
+
+test("verified provider transactions are tracked in a dedicated migration", () => {
+  const migration = read("reduniq-worker/migrations/0003-payment-transactions.sql");
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS payment_transactions/);
+  assert.match(migration, /provider_transaction_id TEXT NOT NULL UNIQUE/);
+  assert.match(migration, /record_reference TEXT NOT NULL UNIQUE/);
+});
+
+test("every payment attempt is logged and confirmations are stored", () => {
+  const migration = read("reduniq-worker/migrations/0004-payment-attempt-lifecycle.sql");
+  const worker = read("reduniq-worker/worker.js");
+  const routes = read("reduniq-worker/payment-routes.js");
+  const payment = read("reduniq-worker/payment-service.js");
+  const records = read("reduniq-worker/payment-record-service.js");
+  const statusScript = read("payment-status.js");
+  assert.match(migration, /CREATE TABLE IF NOT EXISTS payment_attempts/);
+  assert.match(migration, /confirmation_html TEXT NOT NULL/);
+  assert.match(records, /payment_attempt_initialized/);
+  assert.match(records, /payment_attempt_\$\{input\.outcome\}/);
+  assert.match(worker, /\/api\/payment\/retry/);
+  assert.match(payment, /attachments: \[\{ filename:/);
+  assert.match(statusScript, /download-payment-confirmation/);
+  assert.match(statusScript, /status === "unconfirmed"/);
+  for (const outcome of ["failed", "canceled", "unconfirmed"]) assert.match(routes, new RegExp(`${outcome}:`));
+});
+
+test("REDUNIQ provider integration is modular and hosted-link mode fails closed", () => {
+  const provider = read("reduniq-worker/reduniq-provider.js");
+  const registry = read("reduniq-worker/payment-provider.js");
+  const worker = read("reduniq-worker/worker.js");
+  const config = read("reduniq-worker/wrangler.jsonc");
+  assert.match(provider, /assertReduniqAutomaticConfiguration/);
+  assert.match(provider, /verifyReduniqPayment/);
+  assert.match(registry, /getPaymentProvider/);
+  assert.doesNotMatch(worker, /reduniq-provider|REDUNIQ_API_|initPayment|getResult/);
+  assert.match(config, /"REDUNIQ_INTEGRATION_MODE":\s*"hosted-link"/);
+  assert.match(config, /pay-by-link\/3216895\/rivalpraxis/);
+});
+
+test("optional REDUNIQ capabilities are configuration-only and fail closed", () => {
+  const config = read("reduniq-worker/wrangler.jsonc");
+  const capabilities = read("reduniq-worker/payment-config.js");
+  for (const flag of ["REDUNIQ_API_PAYMENTS_ENABLED", "REDUNIQ_WEBHOOKS_ENABLED", "REDUNIQ_CARD_PAYMENTS_ENABLED", "REDUNIQ_MBWAY_ENABLED", "REDUNIQ_INSTALLMENTS_ENABLED"]) {
+    assert.match(config, new RegExp(`"${flag}":\\s*"false"`));
+  }
+  assert.match(capabilities, /hostedLink/);
+  assert.match(capabilities, /apiPayments/);
+  assert.match(capabilities, /installments/);
+});
+
+test("the live Pay-by-Link target remains unchanged", () => {
+  assert.match(read("pay.html"), /https:\/\/pagamentos\.reduniq\.pt\/pay-by-link\/3216895\/rivalpraxis/);
+  assert.doesNotMatch(read("pay.html"), /pay-by-link\/3216895\/rivalpraxis\//);
 });

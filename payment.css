@@ -55,7 +55,8 @@
 .payment-proof h2{margin:2px 0 0;color:var(--brand);font-family:"Cormorant Garamond",Georgia,serif;font-size:34px;line-height:1}
 .payment-proof .eyebrow{margin:0;font-size:10px}
 .payment-proof-print{width:100%;margin-top:20px;border:0;cursor:pointer}
+.payment-proof-actions{display:flex;align-items:center;gap:18px}.payment-proof-actions .text-link{width:auto;padding:10px;border:0;background:transparent;white-space:nowrap}
 .payment-proof-note{margin:13px 0 0!important;color:var(--muted);font-size:12px;line-height:1.6;text-align:center}
 @media(max-width:850px){.payment-shell{grid-template-columns:1fr}.payment-assurance{order:-1}.payment-form-card form{grid-template-columns:1fr}.payment-main{padding-top:48px}}
-@media(max-width:500px){.payment-main{padding:34px 14px 60px}.payment-intro{margin-bottom:28px}.payment-form-card,.payment-assurance{padding:28px 20px}.quote-summary dl div,.status-card dl div{align-items:flex-start;flex-direction:column;gap:4px}.quote-summary dd,.status-card dd{text-align:left}.status-actions .btn{width:100%}.status-card{padding:34px 20px}.payment-proof{padding:24px 18px}.payment-proof-heading>span{width:50px;height:52px}}
+@media(max-width:500px){.payment-main{padding:34px 14px 60px}.payment-intro{margin-bottom:28px}.payment-form-card,.payment-assurance{padding:28px 20px}.quote-summary dl div,.status-card dl div{align-items:flex-start;flex-direction:column;gap:4px}.quote-summary dd,.status-card dd{text-align:left}.status-actions .btn{width:100%}.status-card{padding:34px 20px}.payment-proof{padding:24px 18px}.payment-proof-heading>span{width:50px;height:52px}.payment-proof-actions{align-items:stretch;flex-direction:column}.payment-proof-actions .text-link{margin-top:0}}
 @media print{header,footer,.status-actions,.payment-proof-print{display:none!important}.payment-page,.payment-main{background:#fff!important}.status-card{box-shadow:none;border:1px solid #bbb;max-width:none}.payment-proof{break-inside:avoid}}

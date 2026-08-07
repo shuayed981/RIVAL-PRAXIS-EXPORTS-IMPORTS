@@ -1,5 +1,26 @@
 # Payment Worker deployment
 
+## Current merchant capability
+
+The confirmed production capability is the fixed hosted Pay-by-Link URL. Keep `REDUNIQ_INTEGRATION_MODE` as `hosted-link`, `REDUNIQ_API_PAYMENTS_ENABLED=false`, and both activation switches `false` until REDUNIQ enables the API Gateway. This state prevents the site from claiming that a hosted-link payment was tied to an order or verified automatically.
+
+## API-gateway activation
+
+After REDUNIQ confirms API Gateway access, set the encrypted REDUNIQ username and password directly in Cloudflare, provide the assigned three-digit Payment Solution code, change `REDUNIQ_INTEGRATION_MODE` to `api-gateway`, set `REDUNIQ_API_PAYMENTS_ENABLED=true`, apply migration `0003-payment-transactions.sql`, and complete sandbox success, failure, cancellation, duplicate-notification, and exact-amount-mismatch tests before enabling the two switches.
+
+Optional account features remain independent flags:
+
+- `REDUNIQ_WEBHOOKS_ENABLED`
+- `REDUNIQ_CARD_PAYMENTS_ENABLED`
+- `REDUNIQ_MBWAY_ENABLED`
+- `REDUNIQ_INSTALLMENTS_ENABLED`
+
+Leave each value `false` unless REDUNIQ confirms it is active for this merchant and provides any required Payment Solution code or account setting. The application does not guess method availability. The safe `POST /api/payment/capabilities` endpoint reports the effective non-secret configuration to the website.
+
+Apply `0004-payment-attempt-lifecycle.sql` before activation. Configure `EMAIL_PROVIDER=resend` and install `RESEND_API_KEY` as an encrypted Worker secret if automatic customer confirmation emails and attachments are required. Without that provider secret, payment processing remains fail-safe and the email event is recorded as `skipped`; the on-page downloadable confirmation is still available after successful verification.
+
+No provider credential belongs in this repository.
+
 ## DNS prerequisite
 
 `rivalpraxis.com` must be an active Cloudflare zone before the Worker Custom Domain can be created. Import and preserve these GitHub Pages records before changing the registrar nameservers:
