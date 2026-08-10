@@ -129,6 +129,29 @@ function addToCart(sku, size, quantity) {
 }
 window.RIVAL_CART = Object.freeze({ read: readCart, write: writeCart, add: addToCart, product: getProduct, money: euros, key: RP_CART_KEY });
 
+const QUOTATION_EMAIL = "rivalpraxisunipessoallda@gmail.com";
+function quotationUrl(product, size = sizeOptions(product)[0], quantity = product.moq) {
+    const subject = `Quotation Request - ${product.sku} ${product.name}`;
+    const body = [
+        "Hello RIVAL PRAXIS,",
+        "",
+        "Please provide a quotation for the following product:",
+        `Product: ${product.name}`,
+        `Reference: ${product.sku}`,
+        `Unit price shown: ${euros(product.price)}`,
+        `Size: ${size}`,
+        `Requested quantity: ${quantity}`,
+        "",
+        "Please confirm availability, final pricing, delivery terms and whether the MOQ can be negotiated for this order.",
+        "",
+        "Company name:",
+        "Contact name:",
+        "Delivery country:",
+    ].join("\n");
+    return `mailto:${QUOTATION_EMAIL}?${new URLSearchParams({ subject, body })}`;
+}
+window.RIVAL_QUOTATION_URL = quotationUrl;
+
 function loadProducts(type) {
     const gallery = document.getElementById("gallery");
     const products = RIVAL_PRODUCTS.filter(product => product.type === type);
@@ -169,7 +192,10 @@ function loadProducts(type) {
             button.classList.add("is-added"); button.innerHTML = '<span>Added to Order</span><span aria-hidden="true">&#10003;</span>';
             setTimeout(() => { button.classList.remove("is-added"); button.innerHTML = '<span>Add to Order</span><span aria-hidden="true">&#8594;</span>'; }, 1400);
         });
-        controls.append(sizeField, quantityField); card.append(media, info, controls, button); return card;
+        const quote = document.createElement("a"); quote.className = "btn request-quote-btn"; quote.textContent = "Request a Quotation"; quote.href = quotationUrl(product, select.value, quantity.value); quote.setAttribute("aria-label", `Request a quotation for ${product.name}, ${product.sku}`);
+        quote.addEventListener("click", () => { quote.href = quotationUrl(product, select.value, quantity.value); });
+        const actions = document.createElement("div"); actions.className = "product-card-actions"; actions.append(button, quote);
+        controls.append(sizeField, quantityField); card.append(media, info, controls, actions); return card;
     }));
 }
 
