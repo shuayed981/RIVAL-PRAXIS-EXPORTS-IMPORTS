@@ -17,15 +17,19 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
-      - name: Reject incomplete payment configuration
+      - name: Verify production payment configuration
         shell: bash
         run: |
-          if ! grep -q '"PAYMENTS_ENABLED": "false"' reduniq-worker/wrangler.jsonc; then
-            echo "Deployments must keep the server-side payment switch disabled until sandbox approval."
+          if ! grep -q '"REDUNIQ_ENVIRONMENT": "production"' reduniq-worker/wrangler.jsonc; then
+            echo "REDUNIQ must remain on the confirmed production environment."
             exit 1
           fi
-          if ! grep -q '"COMMERCE_ENABLED": "false"' reduniq-worker/wrangler.jsonc; then
-            echo "Deployments must keep commerce disabled until staging verification is complete."
+          if ! grep -q '"REDUNIQ_INTEGRATION_MODE": "api-gateway"' reduniq-worker/wrangler.jsonc; then
+            echo "The verified API Gateway integration must remain selected."
+            exit 1
+          fi
+          if ! grep -q '"PAYMENTS_ENABLED": "true"' reduniq-worker/wrangler.jsonc || ! grep -q '"COMMERCE_ENABLED": "true"' reduniq-worker/wrangler.jsonc; then
+            echo "The production payment and commerce switches must remain explicit."
             exit 1
           fi
       - name: Verify Cloudflare deployment credentials

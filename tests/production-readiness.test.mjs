@@ -41,13 +41,14 @@ test("merchant identity and complete street address are consistent", () => {
   }
 });
 
-test("payments and commerce fail closed before activation", () => {
+test("payments and commerce are explicitly activated in production", () => {
   const config = read("payment-config.js");
   const workerConfig = read("reduniq-worker/wrangler.jsonc");
-  assert.match(config, /enabled:\s*false/);
-  assert.match(config, /commerceEnabled:\s*false/);
-  assert.match(workerConfig, /"PAYMENTS_ENABLED":\s*"false"/);
-  assert.match(workerConfig, /"COMMERCE_ENABLED":\s*"false"/);
+  assert.match(config, /enabled:\s*true/);
+  assert.match(config, /commerceEnabled:\s*true/);
+  assert.match(workerConfig, /"PAYMENTS_ENABLED":\s*"true"/);
+  assert.match(workerConfig, /"COMMERCE_ENABLED":\s*"true"/);
+  assert.match(workerConfig, /"AUTOMATED_CHECKOUT_RULES":\s*"\{\\"PT\\":\{\\"taxRateBps\\":2300\}\}"/);
 });
 
 test("payment success is server verified and exact-amount checked", () => {
@@ -107,7 +108,7 @@ test("billing and quotation records include the required business and legal fiel
   assert.doesNotMatch(`${orderPage}${quotePage}${read("pay.html")}`, /type="(?:text|password)"[^>]*(?:card|cvv|cvc)|name="(?:card|cvv|cvc)/i);
 });
 
-test("checkout uses the current hosted-link fallback without quotation lookup", () => {
+test("checkout uses automated REDUNIQ API handoff without quotation lookup", () => {
   const orderPage = read("order.html");
   const orderScript = read("order.js");
   const hostedPaymentPage = read("pay.html");
@@ -115,13 +116,11 @@ test("checkout uses the current hosted-link fallback without quotation lookup", 
   const worker = read("reduniq-worker/worker.js");
   const commerce = read("reduniq-worker/commerce-service.js");
   assert.match(orderScript, /\/order\/checkout/);
-  assert.match(orderScript, /rivalpraxisHostedGoodsTotal/);
   assert.doesNotMatch(orderScript, /\/quote\/request|mailto:|Request Confirmed Quote/);
   assert.doesNotMatch(orderPage, /Pay a Quote|confirmed quotation/i);
-  assert.match(orderPage, /REDUNIQ hosted payment is available/i);
-  assert.doesNotMatch(orderPage, /Fully automated checkout/i);
-  assert.match(browserConfig, /mode:\s*"hosted-link"/);
-  assert.match(browserConfig, /hostedPage:\s*"pay\.html"/);
+  assert.match(orderPage, /Verified REDUNIQ checkout is active/i);
+  assert.match(browserConfig, /mode:\s*"api-gateway"/);
+  assert.match(browserConfig, /provider:\s*"reduniq"/);
   assert.match(hostedPaymentPage, /\.format\(amount\)/);
   assert.doesNotMatch(hostedPaymentPage, /amount\s*\/\s*100|cents\s*\/\s*100/);
   assert.match(worker, /automaticCheckout/);
@@ -188,7 +187,7 @@ test("every payment attempt is logged and confirmations are stored", () => {
   for (const outcome of ["failed", "canceled", "unconfirmed"]) assert.match(routes, new RegExp(`${outcome}:`));
 });
 
-test("REDUNIQ provider integration is modular and hosted-link mode fails closed", () => {
+test("REDUNIQ provider integration is modular and production API mode is explicit", () => {
   const provider = read("reduniq-worker/reduniq-provider.js");
   const registry = read("reduniq-worker/payment-provider.js");
   const worker = read("reduniq-worker/worker.js");
@@ -197,14 +196,17 @@ test("REDUNIQ provider integration is modular and hosted-link mode fails closed"
   assert.match(provider, /verifyReduniqPayment/);
   assert.match(registry, /getPaymentProvider/);
   assert.doesNotMatch(worker, /reduniq-provider|REDUNIQ_API_|initPayment|getResult/);
-  assert.match(config, /"REDUNIQ_INTEGRATION_MODE":\s*"hosted-link"/);
+  assert.match(config, /"REDUNIQ_ENVIRONMENT":\s*"production"/);
+  assert.match(config, /"REDUNIQ_INTEGRATION_MODE":\s*"api-gateway"/);
+  assert.match(config, /"REDUNIQ_API_PAYMENTS_ENABLED":\s*"true"/);
+  assert.match(config, /"REDUNIQ_WEBHOOKS_ENABLED":\s*"true"/);
   assert.match(config, /pay-by-link\/3216895\/rivalpraxis/);
 });
 
-test("optional REDUNIQ capabilities are configuration-only and fail closed", () => {
+test("unconfirmed optional REDUNIQ payment methods remain disabled", () => {
   const config = read("reduniq-worker/wrangler.jsonc");
   const capabilities = read("reduniq-worker/payment-config.js");
-  for (const flag of ["REDUNIQ_API_PAYMENTS_ENABLED", "REDUNIQ_WEBHOOKS_ENABLED", "REDUNIQ_CARD_PAYMENTS_ENABLED", "REDUNIQ_MBWAY_ENABLED", "REDUNIQ_INSTALLMENTS_ENABLED"]) {
+  for (const flag of ["REDUNIQ_CARD_PAYMENTS_ENABLED", "REDUNIQ_MBWAY_ENABLED", "REDUNIQ_INSTALLMENTS_ENABLED"]) {
     assert.match(config, new RegExp(`"${flag}":\\s*"false"`));
   }
   assert.match(capabilities, /hostedLink/);
