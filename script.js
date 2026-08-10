@@ -93,8 +93,9 @@ function productMoq(type, index) {
     return type === "accessories" ? (index < 2 ? 600 : index < 4 ? 500 : 400) : (index < 3 ? 500 : 400);
 }
 
-const RIVAL_PRODUCTS = Object.freeze(Object.entries(productGroups).flatMap(([type, group]) =>
-    group.prices.map((price, index) => {
+const RIVAL_PRODUCTS = Object.freeze([
+    ...Object.entries(productGroups).flatMap(([type, group]) =>
+        group.prices.map((price, index) => {
         const originalSku = `RP-${group.code}-${String(index + 1).padStart(4, "0")}`;
         const override = PRODUCT_OVERRIDES[originalSku];
         return Object.freeze({
@@ -103,8 +104,20 @@ const RIVAL_PRODUCTS = Object.freeze(Object.entries(productGroups).flatMap(([typ
         type, category: group.categories[index], name: group.names[index],
         image: `images/${group.imageFolder}/${index + 1}${group.imageSuffix}.jpg`,
         sizes: group.sizes[index] || "One Size", price, moq: productMoq(type, index)
-    });})
-));
+        });})
+    ),
+    Object.freeze({
+        sku: "RP-PAY-TEST-10",
+        legacyReference: "PAYMENT-TEST-10",
+        type: "payment-test",
+        category: "Temporary payment test",
+        name: "Temporary REDUNIQ payment test - no goods",
+        image: "images/rival-praxis-logo.png",
+        sizes: "Test",
+        price: 8.13,
+        moq: 1
+    })
+]);
 window.RIVAL_PRODUCTS = RIVAL_PRODUCTS;
 
 const euros = value => new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(value);

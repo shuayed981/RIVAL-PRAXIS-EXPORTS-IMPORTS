@@ -3,6 +3,7 @@
 .order-intro { max-width: 760px; margin-bottom: 38px; }
 .order-intro h1 { margin: 7px 0 13px; font-size: clamp(38px, 6vw, 72px); line-height: .98; }
 .order-intro p { color: #685f58; }
+.payment-test-banner { margin-top: 20px; padding: 14px 16px; border-left: 4px solid #a86f12; background: #fff3cd; color: #4f3b18 !important; font-weight: 700; }
 .order-shell { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(330px,.6fr); gap: 28px; align-items: start; }
 .order-card { padding: clamp(20px,4vw,40px); border: 1px solid #e4ddd6; background: #fff; box-shadow: 0 14px 40px rgba(36,25,16,.07); }
 .empty-cart { padding: 45px 15px; text-align: center; }
