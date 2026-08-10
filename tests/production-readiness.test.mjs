@@ -203,6 +203,15 @@ test("REDUNIQ provider integration is modular and production API mode is explici
   assert.match(config, /pay-by-link\/3216895\/rivalpraxis/);
 });
 
+test("pending REDUNIQ sessions are reconciled even when return and notification callbacks are missed", () => {
+  const payment = read("reduniq-worker/payment-service.js");
+  const worker = read("reduniq-worker/worker.js");
+  assert.match(payment, /export async function reconcilePendingPaymentSessions/);
+  assert.match(payment, /WHERE status='pending' AND expires_at>/);
+  assert.match(payment, /await verifyPaymentToken\(env, row\.payment_token\)/);
+  assert.match(worker, /reconcilePendingPaymentSessions\(env\)/);
+});
+
 test("unconfirmed optional REDUNIQ payment methods remain disabled", () => {
   const config = read("reduniq-worker/wrangler.jsonc");
   const capabilities = read("reduniq-worker/payment-config.js");

@@ -8,6 +8,7 @@ import {
   paymentResultRoute,
   retryPaymentRoute,
 } from "./payment-routes.js";
+import { reconcilePendingPaymentSessions } from "./payment-service.js";
 import { allowedOrigin, bodyOf, enforceRateLimit, isAdmin, jsonResponse } from "./worker-runtime.js";
 
 const commerceEnabled = env => env.COMMERCE_ENABLED === "true";
@@ -98,6 +99,7 @@ export default {
     const timestamp = new Date().toISOString(); const epoch = Math.floor(Date.now() / 1000);
     ctx.waitUntil(Promise.all([
       env.INVOICES_DB.prepare("DELETE FROM api_rate_limits WHERE expires_at<=?1").bind(epoch).run(),
+      reconcilePendingPaymentSessions(env),
       env.INVOICES_DB.prepare("DELETE FROM payment_sessions WHERE expires_at<=?1").bind(timestamp).run(),
     ]));
   },

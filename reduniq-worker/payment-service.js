@@ -88,6 +88,35 @@ export async function verifyPaymentToken(env, token) {
   return { ...verification, session };
 }
 
+export async function reconcilePendingPaymentSessions(env, { limit = 25 } = {}) {
+  const now = new Date().toISOString();
+  const safeLimit = Math.max(1, Math.min(Number(limit) || 25, 100));
+  const pending = await env.INVOICES_DB.prepare(`SELECT payment_token,quote_reference FROM payment_sessions
+    WHERE status='pending' AND expires_at>?1 ORDER BY created_at ASC LIMIT ?2`).bind(now, safeLimit).all();
+  const results = [];
+  for (const row of pending.results || []) {
+    try {
+      const verification = await verifyPaymentToken(env, row.payment_token);
+      if (!verification) continue;
+      const result = {
+        quoteReference: row.quote_reference,
+        outcome: verification.outcome,
+        resultCode: verification.resultCode,
+        transactionStatus: verification.transactionStatus,
+      };
+      console.log(JSON.stringify({ event: "payment_reconciliation", ...result }));
+      results.push(result);
+    } catch (error) {
+      console.error(JSON.stringify({
+        event: "payment_reconciliation_error",
+        quoteReference: row.quote_reference,
+        message: String(error?.message || "unknown"),
+      }));
+    }
+  }
+  return results;
+}
+
 export async function retryPaymentSession(env, token) {
   const provider = getPaymentProvider(env); provider.assertAutomaticConfiguration(env);
   const tokenHash = await sha256Hex(normalize(token, 80));
