@@ -43,16 +43,18 @@ jobs:
             exit 1
           fi
       - name: Apply production hardening migration
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: reduniq-worker
+          wranglerVersion: "4.120.1"
           command: d1 migrations apply rival-praxis-invoices --remote
       - name: Deploy Worker and custom domain
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: reduniq-worker
+          wranglerVersion: "4.120.1"
           command: deploy
