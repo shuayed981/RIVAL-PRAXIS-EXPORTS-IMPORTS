@@ -82,30 +82,40 @@ const productGroups = {
     }
 };
 
+const PRODUCT_OVERRIDES = Object.freeze({
+    "RP-AC-0012": "RP-CAL-201", "RP-AC-0007": "RP-MAL-202", "RP-MN-0014": "RP-CAM-203",
+    "RP-MN-0027": "RP-SOB-204", "RP-AC-0004": "RP-OCU-205", "RP-AC-0003": "RP-LOT-206",
+    "RP-MN-0022": "RP-VST-101", "RP-WM-0025": "RP-VST-102", "RP-WM-0024": "RP-VST-103",
+    "RP-WM-0029": "RP-VST-104", "RP-AC-0010": "RP-ACC-105", "RP-AC-0018": "RP-LOT-106",
+});
+
 function productMoq(type, index) {
     return type === "accessories" ? (index < 2 ? 600 : index < 4 ? 500 : 400) : (index < 3 ? 500 : 400);
 }
 
 const RIVAL_PRODUCTS = Object.freeze(Object.entries(productGroups).flatMap(([type, group]) =>
-    group.prices.map((price, index) => Object.freeze({
-        sku: `RP-${group.code}-${String(index + 1).padStart(4, "0")}`,
-        legacyReference: `${type.toUpperCase()}-${String(index + 1).padStart(2, "0")}`,
+    group.prices.map((price, index) => {
+        const originalSku = `RP-${group.code}-${String(index + 1).padStart(4, "0")}`;
+        const override = PRODUCT_OVERRIDES[originalSku];
+        return Object.freeze({
+        sku: override || originalSku,
+        legacyReference: override ? originalSku : `${type.toUpperCase()}-${String(index + 1).padStart(2, "0")}`,
         type, category: group.categories[index], name: group.names[index],
         image: `images/${group.imageFolder}/${index + 1}${group.imageSuffix}.jpg`,
         sizes: group.sizes[index] || "One Size", price, moq: productMoq(type, index)
-    }))
+    });})
 ));
 window.RIVAL_PRODUCTS = RIVAL_PRODUCTS;
 
 const euros = value => new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(value);
-const getProduct = sku => RIVAL_PRODUCTS.find(product => product.sku === sku);
+const getProduct = sku => RIVAL_PRODUCTS.find(product => product.sku === sku || product.legacyReference === sku);
 const sizeOptions = product => product.sizes.split(dot).map(value => value.trim()).filter(Boolean);
 
 function readCart() {
     try {
         const parsed = JSON.parse(localStorage.getItem(RP_CART_KEY));
         if (!Array.isArray(parsed)) return [];
-        return parsed.slice(0, 100).map(item => ({ sku: String(item?.sku || "").slice(0, 50), size: String(item?.size || "").slice(0, 40), quantity: Math.max(1, Math.min(1000000, Math.floor(Number(item?.quantity) || 1))) })).filter(item => item.sku);
+        return parsed.slice(0, 100).map(item => ({ sku: String(item?.sku || "").slice(0, 50), size: String(item?.size || "").slice(0, 40), quantity: Math.max(1, Math.min(1000000, Math.floor(Number(item?.quantity) || 1))) })).filter(item => item.sku).map(item => ({ ...item, sku: getProduct(item.sku)?.sku || item.sku }));
     } catch { return []; }
 }
 function writeCart(cart) {

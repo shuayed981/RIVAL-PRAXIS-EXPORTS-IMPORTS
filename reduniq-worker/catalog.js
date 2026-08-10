@@ -22,8 +22,16 @@ const groups = {
   }
 };
 
+const skuOverrides = Object.freeze({
+  "RP-AC-0012": "RP-CAL-201", "RP-AC-0007": "RP-MAL-202", "RP-MN-0014": "RP-CAM-203",
+  "RP-MN-0027": "RP-SOB-204", "RP-AC-0004": "RP-OCU-205", "RP-AC-0003": "RP-LOT-206",
+  "RP-MN-0022": "RP-VST-101", "RP-WM-0025": "RP-VST-102", "RP-WM-0024": "RP-VST-103",
+  "RP-WM-0029": "RP-VST-104", "RP-AC-0010": "RP-ACC-105", "RP-AC-0018": "RP-LOT-106"
+});
+
 const catalogue = new Map(Object.entries(groups).flatMap(([code, group]) => group.prices.map((unitPrice, index) => {
-  const sku = `RP-${code}-${String(index + 1).padStart(4, "0")}`;
+  const originalSku = `RP-${code}-${String(index + 1).padStart(4, "0")}`;
+  const sku = skuOverrides[originalSku] || originalSku;
   const moq = code === "AC" ? (index < 2 ? 600 : index < 4 ? 500 : 400) : (index < 3 ? 500 : 400);
   return [sku, Object.freeze({ sku, unitPrice, moq, sizes: group.sizes[index].split(dot).map(value => value.trim()) })];
 })));
