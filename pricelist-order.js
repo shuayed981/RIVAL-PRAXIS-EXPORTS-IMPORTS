@@ -9,7 +9,7 @@
     const action = document.createElement("td"); action.dataset.label = "Order / Quote";
     const actions = document.createElement("div"); actions.className = "price-actions";
     const link = document.createElement("a"); link.className = "quote-btn"; link.href = `${product.type}.html#${encodeURIComponent(product.sku)}`; link.textContent = "Add to Order"; link.setAttribute("aria-label", `Add ${product.name}, ${product.sku} to order`);
-    const quote = document.createElement("a"); quote.className = "quote-btn secondary"; quote.href = RIVAL_QUOTATION_URL(product); quote.textContent = "Request Quote"; quote.setAttribute("aria-label", `Request a quotation for ${product.name}, ${product.sku}`);
+    const quote = document.createElement("a"); quote.className = "quote-btn secondary"; quote.href = RIVAL_QUOTATION_URL(product); quote.textContent = "Request a Quote"; quote.setAttribute("aria-label", `Request a quotation for ${product.name}, ${product.sku}`);
     actions.append(link, quote); action.append(actions); row.append(action); return row;
   }));
 })();
