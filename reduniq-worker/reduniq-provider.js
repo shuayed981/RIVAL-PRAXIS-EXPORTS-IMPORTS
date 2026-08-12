@@ -17,6 +17,22 @@ export function reduniqCredentials(env) {
   return { username: env.REDUNIQ_API_USERNAME, password: env.REDUNIQ_API_PASSWORD };
 }
 
+export function redactReduniqRequest(payload) {
+  return {
+    ...payload,
+    api: payload?.api ? { username: "[REDACTED]", password: "[REDACTED]" } : undefined,
+  };
+}
+
+export function redactReduniqResponse(result) {
+  if (!result || typeof result !== "object") return result;
+  return {
+    ...result,
+    token: result.token ? "[REDACTED]" : result.token,
+    redirectUrl: result.redirectUrl ? "[REDACTED]" : result.redirectUrl,
+  };
+}
+
 export function assertReduniqAutomaticConfiguration(env) {
   if (env.PAYMENTS_ENABLED !== "true") throw new Error("PAYMENTS_DISABLED");
   const capabilities = paymentCapabilities(env);
@@ -112,8 +128,17 @@ export const reduniqProvider = Object.freeze({
   capabilities: paymentCapabilities,
   assertAutomaticConfiguration: assertReduniqAutomaticConfiguration,
   async initializePayment(env, { quote, urls }) {
-    const result = await callReduniq(env, buildReduniqPaymentPayload(env, quote, urls));
-    if (result?.result?.code !== "00000000" || !result.token || !result.redirectUrl) throw new Error("PAYMENT_INITIALIZATION_FAILED");
+    const payload = buildReduniqPaymentPayload(env, quote, urls);
+    const result = await callReduniq(env, payload);
+    if (result?.result?.code !== "00000000" || !result.token || !result.redirectUrl) {
+      console.error({
+        event: "reduniq_init_payment_rejected",
+        endpoint: reduniqEndpoint(env),
+        request: redactReduniqRequest(payload),
+        response: redactReduniqResponse(result),
+      });
+      throw new Error("PAYMENT_INITIALIZATION_FAILED");
+    }
     return { provider: REDUNIQ_PROVIDER, token: result.token, redirectUrl: result.redirectUrl, raw: result };
   },
   async verifyPayment(env, token, expectedAmount) {

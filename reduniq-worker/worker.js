@@ -70,9 +70,10 @@ export default {
   async fetch(request, env) {
     const origin = allowedOrigin(request, env);
     if (!origin) return jsonResponse({ message: "Origin not allowed" }, 403, env.SITE_ORIGIN);
-    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Headers": "Content-Type, Authorization", "Access-Control-Allow-Methods": "POST,OPTIONS", "Access-Control-Max-Age": "86400", "Vary": "Origin" } });
-    if (request.method !== "POST") return jsonResponse({ message: "Method not allowed" }, 405, origin);
     const path = new URL(request.url).pathname;
+    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Headers": "Content-Type, Authorization", "Access-Control-Allow-Methods": "POST,OPTIONS", "Access-Control-Max-Age": "86400", "Vary": "Origin" } });
+    const reduniqNotificationGet = request.method === "GET" && path === "/api/payment/notification";
+    if (request.method !== "POST" && !reduniqNotificationGet) return jsonResponse({ message: "Method not allowed" }, 405, origin);
     try {
       if (path === "/api/payment/capabilities") return await paymentCapabilitiesRoute(request, env, origin);
       if (path === "/api/quote/lookup") return await lookupOrderRoute(request, env, origin);

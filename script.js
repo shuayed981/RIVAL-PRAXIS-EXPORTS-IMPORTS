@@ -105,18 +105,7 @@ const RIVAL_PRODUCTS = Object.freeze([
         image: `images/${group.imageFolder}/${index + 1}${group.imageSuffix}.jpg`,
         sizes: group.sizes[index] || "One Size", price, moq: productMoq(type, index)
         });})
-    ),
-    Object.freeze({
-        sku: "RP-PAY-TEST-10",
-        legacyReference: "PAYMENT-TEST-10",
-        type: "payment-test",
-        category: "Temporary payment test",
-        name: "Temporary REDUNIQ payment test - no goods",
-        image: "images/rival-praxis-logo.png",
-        sizes: "Test",
-        price: 8.13,
-        moq: 1
-    })
+    )
 ]);
 window.RIVAL_PRODUCTS = RIVAL_PRODUCTS;
 

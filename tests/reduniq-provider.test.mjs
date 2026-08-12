@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildReduniqPaymentPayload, classifyReduniqPayment, verifyReduniqPayment } from "../reduniq-worker/reduniq-provider.js";
+import { buildReduniqPaymentPayload, classifyReduniqPayment, redactReduniqRequest, redactReduniqResponse, verifyReduniqPayment } from "../reduniq-worker/reduniq-provider.js";
 import { paymentCapabilities } from "../reduniq-worker/payment-config.js";
 
 const successful = (amount, code = "10000000") => ({
@@ -59,4 +59,14 @@ test("payment solution is optional and omitted when REDUNIQ should show enabled 
   const urls = { returnUrlOk: "https://rivalpraxis.com/payment-status.html", returnUrlError: "https://rivalpraxis.com/payment-status.html?result=error", notificationUrl: "https://payments.rivalpraxis.com/api/payment/notification" };
   const payload = buildReduniqPaymentPayload({ ...automaticEnv, REDUNIQ_PAYMENT_SOLUTION: "" }, quote, urls);
   assert.equal("solution" in payload.payment, false);
+});
+
+test("diagnostic logging redacts credentials, tokens, and redirect URLs", () => {
+  const request = redactReduniqRequest({ method: "initPayment", api: { username: "3216895", password: "secret" }, payment: { amount: 1000 } });
+  const response = redactReduniqResponse({ result: { code: "00000001", message: "Rejected" }, token: "secret-token", redirectUrl: "https://example.test/token" });
+  assert.deepEqual(request.api, { username: "[REDACTED]", password: "[REDACTED]" });
+  assert.equal(request.payment.amount, 1000);
+  assert.equal(response.token, "[REDACTED]");
+  assert.equal(response.redirectUrl, "[REDACTED]");
+  assert.deepEqual(response.result, { code: "00000001", message: "Rejected" });
 });

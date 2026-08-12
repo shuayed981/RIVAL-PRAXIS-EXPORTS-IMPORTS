@@ -32,7 +32,7 @@
     "AUTOMATED_CHECKOUT_RULES": "{\"PT\":{\"taxRateBps\":2300}}",
     "COMMERCE_ENABLED": "true",
     "PAYMENTS_ENABLED": "true",
-    "EMAIL_PROVIDER": "disabled",
+    "EMAIL_PROVIDER": "resend",
     "EMAIL_FROM": "RIVAL PRAXIS <orders@rivalpraxis.com>",
     "MERCHANT_ORDER_EMAIL": "rivalpraxisunipessoallda@gmail.com"
   },

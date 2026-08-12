@@ -63,7 +63,8 @@ export async function paymentNotificationRoute(request, env, origin) {
   if (!capabilities.webhooks.enabled) throw new Error("PAYMENT_WEBHOOKS_DISABLED");
   if (Number(request.headers.get("Content-Length") || 0) > 65536) return jsonResponse({ message: "Notification is too large" }, 413, origin);
   const type = request.headers.get("Content-Type") || ""; let token = "";
-  if (type.includes("application/json")) token = (await bodyOf(request)).token;
+  if (request.method === "GET") token = new URL(request.url).searchParams.get("token") || new URL(request.url).searchParams.get("TOKEN");
+  else if (type.includes("application/json")) token = (await bodyOf(request)).token;
   else if (type.includes("application/x-www-form-urlencoded")) { const text = await request.text(); if (text.length > 65536) return jsonResponse({ message: "Notification is too large" }, 413, origin); const form = new URLSearchParams(text); token = form.get("TOKEN") || form.get("token"); }
   else { const form = await request.formData(); token = form.get("TOKEN") || form.get("token"); }
   if (!token) return jsonResponse({ message: "Missing token" }, 400, origin);

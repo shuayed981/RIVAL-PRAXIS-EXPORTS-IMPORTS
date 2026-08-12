@@ -36,14 +36,6 @@ const catalogue = new Map(Object.entries(groups).flatMap(([code, group]) => grou
   return [sku, Object.freeze({ sku, unitPrice, moq, sizes: group.sizes[index].split(dot).map(value => value.trim()) })];
 })));
 
-const PAYMENT_TEST_SKU = "RP-PAY-TEST-10";
-catalogue.set(PAYMENT_TEST_SKU, Object.freeze({
-  sku: PAYMENT_TEST_SKU,
-  unitPrice: 813,
-  moq: 1,
-  sizes: ["Test"],
-}));
-
 export function priceCart(input) {
   if (!Array.isArray(input) || input.length === 0 || input.length > 100) throw new Error("At least one valid product is required");
   const seen = new Set();

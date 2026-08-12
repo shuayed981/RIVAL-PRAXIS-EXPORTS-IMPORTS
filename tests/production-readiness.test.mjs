@@ -212,6 +212,14 @@ test("pending REDUNIQ sessions are reconciled even when return and notification 
   assert.match(worker, /reconcilePendingPaymentSessions\(env\)/);
 });
 
+test("REDUNIQ GET notification callbacks are accepted and read the query token", () => {
+  const worker = read("reduniq-worker/worker.js");
+  const routes = read("reduniq-worker/payment-routes.js");
+  assert.match(worker, /request\.method === "GET" && path === "\/api\/payment\/notification"/);
+  assert.match(routes, /request\.method === "GET"/);
+  assert.match(routes, /searchParams\.get\("token"\)/);
+});
+
 test("unconfirmed optional REDUNIQ payment methods remain disabled", () => {
   const config = read("reduniq-worker/wrangler.jsonc");
   const capabilities = read("reduniq-worker/payment-config.js");

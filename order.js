@@ -6,21 +6,10 @@
   const submitButton = document.getElementById("submit-order");
   const downloadButton = document.getElementById("download-order");
   const paymentConfig = window.RIVAL_PAYMENT_CONFIG || {};
-  const paymentTestMode = new URLSearchParams(location.search).get("payment-test") === "reduniq-10-eur";
-  const paymentTestProduct = RIVAL_CART.product("RP-PAY-TEST-10");
   let currentSubtotal = 0;
 
   const checkoutKey = () => `${crypto.randomUUID().replaceAll("-", "")}${crypto.randomUUID().replaceAll("-", "")}`;
-  const validLines = () => paymentTestMode && paymentTestProduct
-    ? [{ sku: paymentTestProduct.sku, size: "Test", quantity: 1, product: paymentTestProduct }]
-    : RIVAL_CART.read().map(item => ({ ...item, product: RIVAL_CART.product(item.sku) })).filter(item => item.product);
-
-  if (paymentTestMode && paymentTestProduct) {
-    const banner = document.createElement("p");
-    banner.className = "payment-test-banner";
-    banner.textContent = "Temporary live REDUNIQ test: final payment amount EUR 10.00 including 23% VAT. No goods will be supplied.";
-    document.querySelector(".order-intro")?.append(banner);
-  }
+  const validLines = () => RIVAL_CART.read().map(item => ({ ...item, product: RIVAL_CART.product(item.sku) })).filter(item => item.product);
 
   function renderCart() {
     const lines = validLines(); currentSubtotal = 0;
@@ -42,15 +31,12 @@
       const quantityInput = document.createElement("input"); quantityInput.id = `cart-qty-${index}`; quantityInput.type = "number"; quantityInput.min = String(item.product.moq); quantityInput.step = "1"; quantityInput.value = String(item.quantity); quantityInput.setAttribute("aria-label", `Quantity for ${item.product.sku}`); quantityWrap.append(quantityLabel, quantityInput);
       const total = document.createElement("div"); total.className = "line-total"; total.textContent = RIVAL_CART.money(lineTotal);
       const remove = document.createElement("button"); remove.className = "remove-line"; remove.type = "button"; remove.setAttribute("aria-label", `Remove ${item.product.sku}`); remove.textContent = "×";
-      if (paymentTestMode) { quantityInput.disabled = true; remove.hidden = true; }
       row.append(image, details, quantityWrap, total, remove);
       quantityInput.addEventListener("change", () => { const cart = RIVAL_CART.read(); const target = cart.find(entry => entry.sku === item.sku && entry.size === item.size); if (!target) return; target.quantity = Math.max(item.product.moq, Math.floor(Number(quantityInput.value) || item.product.moq)); RIVAL_CART.write(cart); renderCart(); });
       remove.addEventListener("click", () => { const cart = RIVAL_CART.read(); const removeIndex = cart.findIndex(entry => entry.sku === item.sku && entry.size === item.size); if (removeIndex >= 0) cart.splice(removeIndex, 1); RIVAL_CART.write(cart); renderCart(); });
       cartLines.append(row);
     });
-    const estimatedTax = paymentTestMode ? Math.round(currentSubtotal * 23) / 100 : 0;
-    document.getElementById("order-subtotal").textContent = RIVAL_CART.money(currentSubtotal); document.getElementById("order-total").textContent = RIVAL_CART.money(currentSubtotal + estimatedTax);
-    if (paymentTestMode) document.querySelector(".grand-total span").textContent = "Final total incl. 23% VAT";
+    document.getElementById("order-subtotal").textContent = RIVAL_CART.money(currentSubtotal); document.getElementById("order-total").textContent = RIVAL_CART.money(currentSubtotal);
   }
 
   function buildOrder() {
@@ -87,7 +73,7 @@
     try {
       const response = await fetch(`${paymentConfig.apiBase}/order/checkout`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const data = await response.json(); if (!response.ok || !data.redirectUrl || !data.token) throw new Error(data.message || "Checkout could not be started.");
-      sessionStorage.setItem("rivalpraxisPaymentToken", data.token); sessionStorage.setItem("rivalpraxisOrderReference", data.orderReference); sessionStorage.removeItem("rivalPraxisCheckoutKey"); if (!paymentTestMode) RIVAL_CART.write([]); window.location.assign(data.redirectUrl);
+      sessionStorage.setItem("rivalpraxisPaymentToken", data.token); sessionStorage.setItem("rivalpraxisOrderReference", data.orderReference); sessionStorage.removeItem("rivalPraxisCheckoutKey"); RIVAL_CART.write([]); window.location.assign(data.redirectUrl);
     } catch (error) {
       message.textContent = error.message === "Failed to fetch" ? "The secure checkout service is temporarily unavailable. Please try again shortly." : error.message; submitButton.disabled = false; submitButton.textContent = "Pay Securely";
     }
