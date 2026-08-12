@@ -21,7 +21,7 @@
         .price-list tbody tr:nth-child(even) { background: #fafafa; }
         .price-list tbody tr:hover { background: #fff8df; }
         .price { color: var(--brand); font-weight: 700; }
-        .quote-btn { display: inline-block; min-width: 128px; padding: 10px 16px; border-radius: 999px; background: linear-gradient(135deg, var(--brand), var(--brand-dark)); color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform .2s, background .2s, color .2s; }
+        .quote-btn { display: inline-block; width: 100%; min-width: 0; box-sizing: border-box; padding: 10px 8px; text-align: center; border-radius: 999px; background: linear-gradient(135deg, var(--brand), var(--brand-dark)); color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform .2s, background .2s, color .2s; }
         .quote-btn:hover, .quote-btn:focus-visible { transform: translateY(-2px); background: linear-gradient(135deg, var(--gold), #b89220); color: #111; }
         .price-actions { display: grid; gap: 8px; }
         .quote-btn.secondary { border: 1px solid var(--brand); background: #fff; color: var(--brand); }
@@ -87,6 +87,6 @@
     <p><a href="merchant-information.html">Merchant Information</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="returns.html">Returns</a><a href="payments.html">Payments</a></p>
 </footer>
 <script src="script.js?v=20260810-invoice-refs"></script>
-<script src="pricelist-order.js?v=20260810-quote80"></script>
+<script src="pricelist-order.js?v=20260812-quote-fit"></script>
 </body>
 </html>
