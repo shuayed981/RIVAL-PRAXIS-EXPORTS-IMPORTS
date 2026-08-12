@@ -23,6 +23,7 @@
         .price { color: var(--brand); font-weight: 700; }
         .quote-btn { display: inline-block; width: 100%; min-width: 0; box-sizing: border-box; padding: 10px 8px; text-align: center; border-radius: 999px; background: linear-gradient(135deg, var(--brand), var(--brand-dark)); color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform .2s, background .2s, color .2s; }
         .quote-btn:hover, .quote-btn:focus-visible { transform: translateY(-2px); background: linear-gradient(135deg, var(--gold), #b89220); color: #111; }
+        .price-list th:last-child, .price-list td:last-child { width: 190px; min-width: 190px; }
         .price-actions { display: grid; gap: 8px; }
         .quote-btn.secondary { border: 1px solid var(--brand); background: #fff; color: var(--brand); }
         .price-note { margin-top: 28px !important; color: #666; font-size: 15px !important; }
@@ -36,7 +37,7 @@
             .price-list tbody { display: grid; gap: 18px; }
             .price-list tbody tr { overflow: hidden; border: 1px solid #e7e7e7; border-radius: 15px; background: #fff !important; box-shadow: 0 8px 24px rgba(0,0,0,.09); }
             .price-list td { display: grid; grid-template-columns: minmax(105px, .8fr) minmax(0, 1.2fr); gap: 14px; padding: 13px 16px; border-bottom: 1px solid #eee; text-align: right; overflow-wrap: anywhere; }
-            .price-list td:last-child { border-bottom: 0; }
+            .price-list td:last-child { width: 100%; min-width: 0; border-bottom: 0; }
             .price-list td::before { color: #666; font-size: 13px; font-weight: 600; letter-spacing: .03em; text-align: left; text-transform: uppercase; content: attr(data-label); }
         }
 
