@@ -24,12 +24,12 @@
         .quote-btn { display: inline-block; width: 100%; min-width: 0; box-sizing: border-box; padding: 10px 8px; text-align: center; border-radius: 999px; background: linear-gradient(135deg, var(--brand), var(--brand-dark)); color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; transition: transform .2s, background .2s, color .2s; }
         .quote-btn:hover, .quote-btn:focus-visible { transform: translateY(-2px); background: linear-gradient(135deg, var(--gold), #b89220); color: #111; }
         .price-list th:last-child, .price-list td:last-child { width: 190px; min-width: 190px; }
-        .price-actions { display: grid; gap: 8px; }
+        .price-actions { display: grid; width: 100%; min-width: 0; gap: 8px; }
         .quote-btn.secondary { border: 1px solid var(--brand); background: #fff; color: var(--brand); }
         .price-note { margin-top: 28px !important; color: #666; font-size: 15px !important; }
         .price-list-footer p + p { margin-top: 6px; }
 
-        @media (max-width: 700px) {
+        @media (max-width: 1100px) {
             .price-list-section { padding-top: 35px; }
             .price-list-wrap { overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
             .price-list, .price-list tbody, .price-list tr, .price-list td { display: block; width: 100%; }
