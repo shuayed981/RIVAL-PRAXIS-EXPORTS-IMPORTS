@@ -12,6 +12,61 @@ import { reconcilePendingPaymentSessions } from "./payment-service.js";
 import { allowedOrigin, bodyOf, enforceRateLimit, isAdmin, jsonResponse } from "./worker-runtime.js";
 
 const commerceEnabled = env => env.COMMERCE_ENABLED === "true";
+const cleanupRetryDelays = [100, 200];
+
+const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+
+function sanitizedMaintenanceError(error) {
+  const message = String(error?.message || "");
+  const code = message.match(/\bD1_(?:ERROR|EXEC_ERROR|TYPE_ERROR)\b/i)?.[0]?.toUpperCase();
+  const reference = message.match(/\breference\s*=\s*([a-z0-9_-]+)/i)?.[1];
+  if (!code) return "Scheduled maintenance step failed.";
+  return reference ? `${code}: reference = ${reference}` : code;
+}
+
+async function runScheduledStep(name, action, { retryDelays = [], sleep = wait } = {}) {
+  for (let attempt = 0; attempt <= retryDelays.length; attempt += 1) {
+    try {
+      await action();
+      console.log(JSON.stringify({ event: "scheduled_step_complete", step: name, attempt: attempt + 1 }));
+      return;
+    } catch (error) {
+      console.error(JSON.stringify({ event: "scheduled_step_error", step: name, attempt: attempt + 1, message: sanitizedMaintenanceError(error) }));
+      if (attempt === retryDelays.length) throw error;
+      await sleep(retryDelays[attempt]);
+    }
+  }
+}
+
+export async function runScheduledMaintenance(env, { reconcile = reconcilePendingPaymentSessions, sleep = wait } = {}) {
+  const timestamp = new Date().toISOString(); const epoch = Math.floor(Date.now() / 1000);
+  const steps = [
+    {
+      name: "expired_rate_limits_cleanup",
+      retryDelays: cleanupRetryDelays,
+      action: () => env.INVOICES_DB.prepare("DELETE FROM api_rate_limits WHERE expires_at<=?1").bind(epoch).run(),
+    },
+    {
+      name: "pending_payment_reconciliation",
+      retryDelays: [],
+      action: () => reconcile(env),
+    },
+    {
+      name: "expired_payment_sessions_cleanup",
+      retryDelays: cleanupRetryDelays,
+      action: () => env.INVOICES_DB.prepare("DELETE FROM payment_sessions WHERE expires_at<=?1").bind(timestamp).run(),
+    },
+  ];
+  const failures = [];
+  for (const step of steps) {
+    try {
+      await runScheduledStep(step.name, step.action, { retryDelays: step.retryDelays, sleep });
+    } catch {
+      failures.push(step.name);
+    }
+  }
+  if (failures.length) throw new Error(`SCHEDULED_MAINTENANCE_FAILED:${failures.join(",")}`);
+}
 
 async function quoteRequest(request, env, origin) {
   if (!commerceEnabled(env)) return jsonResponse({ message: "Online quotation requests are not active yet." }, 503, origin);
@@ -97,11 +152,6 @@ export default {
     }
   },
   async scheduled(_controller, env, ctx) {
-    const timestamp = new Date().toISOString(); const epoch = Math.floor(Date.now() / 1000);
-    ctx.waitUntil(Promise.all([
-      env.INVOICES_DB.prepare("DELETE FROM api_rate_limits WHERE expires_at<=?1").bind(epoch).run(),
-      reconcilePendingPaymentSessions(env),
-      env.INVOICES_DB.prepare("DELETE FROM payment_sessions WHERE expires_at<=?1").bind(timestamp).run(),
-    ]));
+    ctx.waitUntil(runScheduledMaintenance(env));
   },
 };

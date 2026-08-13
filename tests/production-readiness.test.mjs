@@ -209,7 +209,8 @@ test("pending REDUNIQ sessions are reconciled even when return and notification 
   assert.match(payment, /export async function reconcilePendingPaymentSessions/);
   assert.match(payment, /WHERE status='pending' AND expires_at>/);
   assert.match(payment, /await verifyPaymentToken\(env, row\.payment_token\)/);
-  assert.match(worker, /reconcilePendingPaymentSessions\(env\)/);
+  assert.match(worker, /reconcile = reconcilePendingPaymentSessions/);
+  assert.match(worker, /action: \(\) => reconcile\(env\)/);
 });
 
 test("REDUNIQ GET notification callbacks are accepted and read the query token", () => {
